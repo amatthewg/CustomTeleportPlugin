@@ -2,3 +2,8 @@ name: CustomTeleportPlugin
 version: '${project.version}'
 main: com.pepperish.customteleportplugin.CustomTeleportPlugin
 api-version: '1.20'
+commands:
+  ctp:
+    usage: /ctp
+    description: Use this command to access CustomTeleport
+

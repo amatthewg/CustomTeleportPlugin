@@ -1,16 +1,19 @@
 package com.pepperish.customteleportplugin.commands.subcommands;
 
 import com.pepperish.customteleportplugin.commands.SubCommand;
-import com.pepperish.customteleportplugin.permissions.Permission;
-import com.pepperish.customteleportplugin.tool.CustomTpTool;
-import net.md_5.bungee.api.ChatMessageType;
-import org.bukkit.ChatColor;
+import com.pepperish.customteleportplugin.enums.Permission;
+import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
+import com.pepperish.customteleportplugin.util.CustomTpTool;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
 public class ToolCommand extends SubCommand {
+
+    private static PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
+
+    private static ItemStack customTpTool = CustomTpTool.getItemStack();
     @Override
     public String getName() {
         return "tool";
@@ -27,18 +30,19 @@ public class ToolCommand extends SubCommand {
     }
 
     @Override
-    public void perform(Player player, String[] args) {
-        if(player.hasPermission(Permission.COMMAND_TOOL.getPermission())) {
-            Map<Integer, ItemStack> map = player.getInventory().addItem(CustomTpTool.getItemStack());
-            if(map.isEmpty()) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        "&aYou have been given one Tool"));
-            }
-            else {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        "&cCould not add the tool to your inventory!"));
-            }
+    public String getPermissionString() {
+        return Permission.CTP_ADMIN.getString();
+    }
 
+    @Override
+    public void perform(Player sender, String[] args) {
+        Map<Integer, ItemStack> map = sender.getInventory().addItem(customTpTool);
+        if (map.isEmpty()) {
+            chatMessenger.sendChat(sender, "&aYou have been given one Tool");
+        } else {
+            chatMessenger.sendChat(sender, "&cCould not add the tool to your inventory!");
         }
+
+
     }
 }

@@ -1,29 +1,47 @@
 package com.pepperish.customteleportplugin.commands.subcommands;
 
-import com.pepperish.customteleportplugin.DAL.BlockStorage;
-import com.pepperish.customteleportplugin.DAL.FileManager;
-import com.pepperish.customteleportplugin.DAL.ReturnLocationStorage;
+import com.pepperish.customteleportplugin.managers.LocationManager;
 import com.pepperish.customteleportplugin.commands.SubCommand;
-import com.pepperish.customteleportplugin.permissions.Permission;
+import com.pepperish.customteleportplugin.managers.TeleportManager;
+import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
+import com.pepperish.customteleportplugin.enums.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 // Handles the command /ctp tpall
 public class TpAllCommand extends SubCommand {
 
     private static boolean commandIsActive = false;
 
-    private boolean commandWasRun = false;
-    private static String commandTpAllPermission = Permission.COMMAND_TPALL.getPermission();
-    private static String shouldBeTeleportedPermission = Permission.SHOULD_BE_TELEPORTED.getPermission();
+    private static LocationManager locationManager = new LocationManager();
+
+    private static String shouldBeTeleportedPermission = Permission.SHOULD_BE_TELEPORTED.getString();
+
+    private static PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
+
+    private static TeleportManager tpManager = new TeleportManager();
+
+    private static JavaPlugin plugin;
+
+    private static boolean commandWasRun = false;
+
+    public static boolean getCommandIsActive() {
+        return commandIsActive;
+    }
+
+    public static boolean getCommandWasRun() { return commandWasRun; }
+
+    public TpAllCommand(JavaPlugin pl) {
+        plugin = pl;
+    }
+
+
     @Override
     public String getName() {
         return "tpall";
@@ -40,58 +58,27 @@ public class TpAllCommand extends SubCommand {
     }
 
     @Override
-    public void perform(Player player, String[] args) {
-        if(player.hasPermission(commandTpAllPermission)) {
-            FileManager fileManager = new FileManager();
-            if(!(fileManager.isCurrentlyLoading() || fileManager.isFileError())) {
-                if(!commandWasRun) {
-                    // Used to make the sending player confirm the cmd
-                    // Note: does not account for if one admin runs the cmd first, then another admin runs the cmd
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            "&cWARNING: You are about to teleport the players to their seats.\n" +
-                                    "Re-enter &a/ctp tpall &cto confirm."));
-                    // TODO this command confirm should account for different admins running the command
-                    // TODO this command confirm should time out the confirm request eventually
-                    commandWasRun = true;
-                }
-                else {
-                    // Command is confirmed
-                    BlockStorage blockStorage = new BlockStorage();
-                    Map<Location, UUID> map = blockStorage.getBlockLocationsAsMap();
-
-                    
-                }
-            }
-            else {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        "The plugin experienced an error loading save data. Please restart " +
-                                "the server or try again later."));
-            }
-        } else{
-            player.sendMessage(Permission.NO_PERMISSION.getPermission());
-        }
-
-
+    public String getPermissionString() {
+        return Permission.CTP_ADMIN.getString();
     }
-    public static boolean commandIsActive() { return commandIsActive; }
-    public static void setCommandIsActive(boolean status) { commandIsActive = status; }
 
-    private void runTeleport(Player sender) {
-        BlockStorage blockStorage = new BlockStorage();
-        ReturnLocationStorage returnLocationStorage = new ReturnLocationStorage();
-
-        List<Player> playersToTeleport = Bukkit.getOnlinePlayers().stream()
-                .filter(p -> p.hasPermission(shouldBeTeleportedPermission))
-                .collect(Collectors.toList());
-
-        List<Location> locations = new ArrayList<>(blockStorage.getBlockLocations());
-
-        if(playersToTeleport.size() > locations.size()) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    String.format("&cWARNING: Too few block locations &f(%d) &cto teleport %d players! " +
-                            "Some players won't get teleported!", locations.size(), playersToTeleport.size())));
+    @Override
+    public void perform(Player sender, String[] args) {
+        if (!commandWasRun) {
+            // TODO does not account for if one admin runs the cmd first, then another admin runs the cmd
+            chatMessenger.sendChat(sender, "&cWARNING: You are about to teleport the players to their seats.\n" +
+                    "Re-enter &a/ctp tpall &cto confirm.");
+            // TODO this command confirm should time out the confirm request eventually
+            // TODO does not
+            commandWasRun = true;
+        } else {
+            chatMessenger.messageAdmins(String.format("&e[CustomTeleport] &6(sent to all CTP admins)\n"+
+                    "&e%s &ajust executed &e/ctp tpall", sender.getName()));
+            tpManager.tpAllPlayers();
+            commandWasRun = false;
         }
-
-
     }
+
+
+
 }

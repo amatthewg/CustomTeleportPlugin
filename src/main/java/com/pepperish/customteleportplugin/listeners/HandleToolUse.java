@@ -1,12 +1,13 @@
 package com.pepperish.customteleportplugin.listeners;
 
-import com.pepperish.customteleportplugin.CustomTeleportPlugin;
-import com.pepperish.customteleportplugin.DAL.BlockStorage;
-import com.pepperish.customteleportplugin.DAL.DAL;
-import com.pepperish.customteleportplugin.permissions.Permission;
-import com.pepperish.customteleportplugin.tool.CustomTpTool;
 
-import org.bukkit.ChatColor;
+import com.pepperish.customteleportplugin.managers.LocationManager;
+import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
+import com.pepperish.customteleportplugin.enums.Permission;
+import com.pepperish.customteleportplugin.util.CustomTpTool;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,92 +15,84 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 
 public class HandleToolUse implements Listener {
 
     private static final ItemStack customTpTool = CustomTpTool.getItemStack();
-    private static final String useToolPermission = Permission.COMMAND_TOOL.getPermission();
-    private CustomTeleportPlugin plugin;
-    public HandleToolUse(CustomTeleportPlugin plugin) {
-        this.plugin = plugin;
-    }
+
+    private static final String ctpAdmin = Permission.CTP_ADMIN.getString();
+
+    private static LocationManager locationManager = new LocationManager();
+
+    private static PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
+
+    public HandleToolUse() {}
 
 
     // Event used to handle when the player uses our custom tool to right-click a block (add the block)
     @EventHandler
     public void onToolRightClick(PlayerInteractEvent event) {
-        // First, check if player right-clicked a block
-        if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            // Next, check if player used our tool with their main hand
-            Player player = event.getPlayer();
-            if(player.getInventory().getItemInMainHand().equals(customTpTool)) {
-                // Next, check if player has permission to use the tool
-                if(player.hasPermission(useToolPermission)) {
-                    // Finally, handle the clicked block
-                    handleRightClickedBlock(player, event.getClickedBlock());
-                }
-                else {
-                    player.sendMessage("How did you get this tool?");
-                    player.getInventory().setItemInMainHand(null);
-                }
-            }
+        Player player = event.getPlayer();
+        if (!player.getInventory().getItemInMainHand().equals(customTpTool)) return;
+        // PlayerInteractEvent will fire twice for each hand, so must check for the hand used
+        if (!(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getHand().equals(EquipmentSlot.HAND))) return;
+        if (player.hasPermission(ctpAdmin)) {
+            handleRightClickedBlock(player, event.getClickedBlock());
+        } else {
+            chatMessenger.sendChat(player, "&cYou shouldn't have this tool!");
+            player.getInventory().setItemInMainHand(null);
         }
     }
+
     public void handleRightClickedBlock(Player interactingPlayer, Block clickedBlock) {
-        BlockStorage blockStorage = new BlockStorage();
+        Material blockMaterial = clickedBlock.getType();
         int x = clickedBlock.getX();
         int y = clickedBlock.getY();
         int z = clickedBlock.getZ();
-        // Add location to DAL
-        if(blockStorage.addToBlockLocations(clickedBlock.getLocation())) {
-            // Sucessfully added
-            interactingPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    String.format("&aBlock has been added! &f(%d,%d,%d)", x, y, z)));
+        if(locationManager.addAvailableBlockLocation(clickedBlock.getLocation())) {
+            chatMessenger.sendChat(interactingPlayer, String.format("&aAdded block &e%s &f(%d,%d,%d)", blockMaterial, x, y, z));
         }
         else {
-            // Block was already added
-            interactingPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    String.format("&cBlock was already added! &f(%d,%d,%d)", x, y, z)));
+            chatMessenger.sendChat(interactingPlayer, String.format(
+                    "&cBlock &e%s was already added! &f(%d,%d,%d)", blockMaterial, x, y, z
+            ));
         }
-
     }
 
     // Event used to handle when player left-clicks a block (remove the block)
     @EventHandler
     public void onToolLeftClick(BlockBreakEvent event) {
-        // First, check if player used our tool with the main hand
         Player player = event.getPlayer();
-        if(player.getInventory().getItemInMainHand().equals(customTpTool)) {
-            event.setCancelled(true);
-            // Next check if player has permission to use the tool
-            if(player.hasPermission(useToolPermission)) {
-                // Finally, handle the left-clicked block
-                handleLeftClickedBlock(player, event.getBlock());
-            }
-            else {
-                player.sendMessage("How did you get this tool?");
-                player.getInventory().setItemInMainHand(null);
-            }
-
+        if(!player.getInventory().getItemInMainHand().equals(customTpTool)) return;
+        event.setCancelled(true);
+        if(!player.hasPermission(ctpAdmin)) {
+            chatMessenger.sendChat(player, "&cYou shouldn't have this tool!");
+            player.getInventory().setItemInMainHand(null);
+            return;
         }
+        handleLeftClickedBlock(player, event.getBlock());
     }
 
     public void handleLeftClickedBlock(Player interactingPlayer, Block clickedBlock) {
-        BlockStorage blockStorage = new BlockStorage();
+        Material blockMaterial = clickedBlock.getType();
+        Location blockLocation = clickedBlock.getLocation();
         int x = clickedBlock.getX();
         int y = clickedBlock.getY();
         int z = clickedBlock.getZ();
-        if(blockStorage.removeFromTeleportLocations(clickedBlock.getLocation())) {
-            // Block successfully removed
-            interactingPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    String.format("&aBlock has been removed! &f(%d,%d,%d)", x, y, z)));
+        if(locationManager.removeAvailableBlockLocation(blockLocation)) {
+            chatMessenger.sendChat(interactingPlayer, String.format(
+                    "&aBlock &e%s &awas removed! &f(%d,%d,%d)", blockMaterial, x, y, z
+            ));
         }
         else {
-            // Block was never added
-            interactingPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    String.format("&cBlock was never added! &f(%d,%d,%d)", x, y, z)));
+            chatMessenger.sendChat(interactingPlayer, String.format(
+                    "&cBlock &e%s &cwas never added! &f(%d,%d,%d)", blockMaterial, x, y, z
+            ));
         }
+
+
     }
 }

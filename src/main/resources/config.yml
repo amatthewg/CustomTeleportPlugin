@@ -1,0 +1,15 @@
+# Should players be sent a chat message after being teleported?
+message-players-on-tp: true
+
+# If above is true, you can set the specific message you want them to be sent
+on-tp-messages:
+  - '&aYou have been teleported to your seat and are frozen until church is over.'
+# - 'You can specify multiple message lines to be sent if you want'
+
+# Should players be sent a chat message after being returned?
+message-players-on-return: true
+
+# If the above is true, you can set the specific message you want them to be sent
+on-return-messages:
+  - '&aChurch is over and you have been returned to your original location'
+# - 'You can specify multiple message lines to be sent if you want'

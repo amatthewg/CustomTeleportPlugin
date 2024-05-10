@@ -1,52 +1,52 @@
 package com.pepperish.customteleportplugin;
 
-import com.pepperish.customteleportplugin.DAL.BlockStorage;
-import com.pepperish.customteleportplugin.DAL.DAL;
-import com.pepperish.customteleportplugin.DAL.FileManager;
+import com.pepperish.customteleportplugin.managers.FileManager;
+import com.pepperish.customteleportplugin.managers.LocationManager;
 import com.pepperish.customteleportplugin.commands.CommandManager;
+import com.pepperish.customteleportplugin.listeners.HandlePlayerDisconnect;
+import com.pepperish.customteleportplugin.listeners.HandlePlayerJoin;
 import com.pepperish.customteleportplugin.listeners.HandleToolUse;
+import com.pepperish.customteleportplugin.managers.TeleportManager;
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
+import java.util.List;
+import java.util.Set;
+
 
 public final class CustomTeleportPlugin extends JavaPlugin {
 
+
+    private static LocationManager locationManager = null;
+
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        DAL dal = new DAL(this);
-        getServer().getPluginManager().registerEvents(new HandleToolUse(this), this);
-        getCommand("ctp").setExecutor(new CommandManager());
+        saveDefaultConfig();
 
         FileManager fileManager = new FileManager(this);
-        Optional<Boolean> optional = fileManager.createFileIfNotExists();
-        if(optional.isPresent()) {
-            boolean fileWasCreated = optional.get();
-            if(fileWasCreated) {
-                BlockStorage blockStorage = new BlockStorage(new HashSet<>());
-            }
-            else {
-                CompletableFuture<Void> future = fileManager.loadSetFromJson().thenApply(locationSet -> {
-                    if(locationSet != null) {
-                        BlockStorage blockStorage = new BlockStorage(locationSet);
-                    }
-                    else {
-                        BlockStorage blockStorage = new BlockStorage(new HashSet<>());
-                    }
-                    return null;
-                });
-            }
-        }
-        else {
-            getLogger().log(Level.SEVERE, "The plugin was unable to create the necessary save file. Please restart the server.");
-        }
-    }
+        TeleportManager teleportManager = new TeleportManager(this);
 
+        getServer().getPluginManager().registerEvents(new HandleToolUse(), this);
+        getServer().getPluginManager().registerEvents(new HandlePlayerJoin(this), this);
+        getServer().getPluginManager().registerEvents(new HandlePlayerDisconnect(), this);
+
+        getCommand("ctp").setExecutor(new CommandManager(this));
+
+        if (!fileManager.createFileIfNotExists()) {
+            Set<Location> loadedLocations = fileManager.loadSetFromFile();
+            if(loadedLocations != null) { // If null signifies file exists but was empty
+                locationManager = new LocationManager(loadedLocations);
+            }
+        }
+
+
+    }
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        locationManager = new LocationManager();
+        locationManager.refresh();
+        FileManager fileManager = new FileManager();
+        Set<Location> allBlockLocations = locationManager.getAllBlockLocations();
+        fileManager.saveSetToFile(allBlockLocations);
     }
 }

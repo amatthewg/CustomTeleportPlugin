@@ -1,8 +1,7 @@
-package com.pepperish.customteleportplugin.tool;
+package com.pepperish.customteleportplugin.util;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -23,7 +22,6 @@ public class CustomTpTool {
         loreStrings.add(ChatColor.translateAlternateColorCodes('&', "&a&lCustomTeleport"));
         loreStrings.add("Right-click on a block with this tool to ");
         loreStrings.add("set the blocks for players to teleport to.");
-
         loreStrings.add("Left-click on a block to remove it from the");
         loreStrings.add("teleport list.");
         itemMeta.setLore(loreStrings);

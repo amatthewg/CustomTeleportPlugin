@@ -3,7 +3,7 @@ package com.pepperish.customteleportplugin.listeners;
 
 import com.pepperish.customteleportplugin.managers.LocationManager;
 import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
-import com.pepperish.customteleportplugin.enums.Permission;
+import com.pepperish.customteleportplugin.util.Permission;
 import com.pepperish.customteleportplugin.util.CustomTpTool;
 
 import org.bukkit.Location;

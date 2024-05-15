@@ -2,7 +2,7 @@ package com.pepperish.customteleportplugin.commands.subcommands;
 
 import com.pepperish.customteleportplugin.managers.LocationManager;
 import com.pepperish.customteleportplugin.commands.SubCommand;
-import com.pepperish.customteleportplugin.enums.Permission;
+import com.pepperish.customteleportplugin.util.Permission;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,8 +10,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 // /ctp viewall
 public class ViewAllCommand extends SubCommand {
@@ -47,8 +47,7 @@ public class ViewAllCommand extends SubCommand {
     public void perform(Player sender, String[] args) {
         if(!commandWasRun) { // Change set blocks to an easier-to-see block type
             commandWasRun = true;
-            List<Location> blockLocations = locationManager.getAllBlockLocations();
-            // I don't understand packets yet :(
+            Set<Location> blockLocations = locationManager.getAllBlockLocations();
             for(Location blockLocation : blockLocations) {
                 Block block = blockLocation.getBlock();
                 originalBlocksMap.put(blockLocation, block.getType());

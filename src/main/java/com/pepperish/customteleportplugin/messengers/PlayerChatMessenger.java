@@ -1,6 +1,6 @@
 package com.pepperish.customteleportplugin.messengers;
 
-import com.pepperish.customteleportplugin.enums.Permission;
+import com.pepperish.customteleportplugin.util.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

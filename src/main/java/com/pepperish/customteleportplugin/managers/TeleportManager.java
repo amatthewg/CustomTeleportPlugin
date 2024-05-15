@@ -1,6 +1,6 @@
 package com.pepperish.customteleportplugin.managers;
 
-import com.pepperish.customteleportplugin.enums.Permission;
+import com.pepperish.customteleportplugin.util.Permission;
 import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -79,14 +79,17 @@ public class TeleportManager {
         Bukkit.getOnlinePlayers().stream()
                 .filter(p -> p.hasPermission(shouldBeTeleportedPermission))
                 .forEach(p -> {
-                    Location returnLocation = locationManager.getReturnLocation(p);
-                    returnPlayer(p, returnLocation);
-                    if(playersShouldBeMessagedOnReturn) {
-                        chatMessenger.sendChat(p, onReturnMessages);
+                    Optional<Location> returnLocation = locationManager.getReturnLocation(p);
+                    if(returnLocation.isPresent()) {
+                        returnPlayer(p, returnLocation.get());
+                        if(playersShouldBeMessagedOnReturn) {
+                            chatMessenger.sendChat(p, onReturnMessages);
+                        }
                     }
+                    // Empty optional signifies that this player was not teleported the last time /ctp tpall was run
                 });
         locationManager.refresh();
-        chatMessenger.sendChat(sender, "&aSuccessfully returned all players!");
+        chatMessenger.sendChat(commandSender, "&aSuccessfully returned all players!");
 
         playersAreTeleported = false;
     }

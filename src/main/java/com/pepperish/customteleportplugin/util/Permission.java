@@ -1,4 +1,4 @@
-package com.pepperish.customteleportplugin.enums;
+package com.pepperish.customteleportplugin.util;
 
 public enum Permission {
     CTP_ADMIN("ctp.admin"),

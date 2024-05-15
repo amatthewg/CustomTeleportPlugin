@@ -7,7 +7,7 @@ import com.pepperish.customteleportplugin.commands.SubCommand;
 import com.pepperish.customteleportplugin.listeners.HandlePlayerDisconnect;
 import com.pepperish.customteleportplugin.listeners.HandlePlayerJoin;
 import com.pepperish.customteleportplugin.listeners.HandleToolUse;
-import com.pepperish.customteleportplugin.enums.Permission;
+import com.pepperish.customteleportplugin.util.Permission;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;

@@ -2,7 +2,7 @@ package com.pepperish.customteleportplugin.listeners;
 
 import com.pepperish.customteleportplugin.managers.LocationManager;
 import com.pepperish.customteleportplugin.commands.subcommands.TpAllCommand;
-import com.pepperish.customteleportplugin.enums.Permission;
+import com.pepperish.customteleportplugin.util.Permission;
 import com.pepperish.customteleportplugin.managers.TeleportManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

@@ -1,7 +1,7 @@
 package com.pepperish.customteleportplugin.commands.subcommands;
 
 import com.pepperish.customteleportplugin.commands.SubCommand;
-import com.pepperish.customteleportplugin.enums.Permission;
+import com.pepperish.customteleportplugin.util.Permission;
 import org.bukkit.entity.Player;
 
 public class CancelCommand extends SubCommand {

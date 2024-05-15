@@ -4,15 +4,9 @@ import com.pepperish.customteleportplugin.managers.LocationManager;
 import com.pepperish.customteleportplugin.commands.SubCommand;
 import com.pepperish.customteleportplugin.managers.TeleportManager;
 import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
-import com.pepperish.customteleportplugin.enums.Permission;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import com.pepperish.customteleportplugin.util.Permission;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 // Handles the command /ctp tpall
 public class TpAllCommand extends SubCommand {

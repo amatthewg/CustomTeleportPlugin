@@ -1,7 +1,7 @@
 package com.pepperish.customteleportplugin.commands.subcommands;
 
 import com.pepperish.customteleportplugin.commands.SubCommand;
-import com.pepperish.customteleportplugin.enums.Permission;
+import com.pepperish.customteleportplugin.util.Permission;
 import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
 import com.pepperish.customteleportplugin.util.CustomTpTool;
 import org.bukkit.entity.Player;

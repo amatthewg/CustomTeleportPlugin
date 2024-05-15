@@ -29,8 +29,9 @@ public class LocationManager {
         return Optional.of(result);
     }
 
-    public Location getReturnLocation(Player player) {
-        return occupiedBlockLocations.get(player.getUniqueId());
+    public Optional<Location> getReturnLocation(Player player) {
+        Location result = occupiedBlockLocations.get(player.getUniqueId());
+        return result == null ? Optional.empty() : Optional.of(result);
     }
 
     public boolean addAvailableBlockLocation(Location location) {

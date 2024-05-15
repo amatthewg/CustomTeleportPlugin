@@ -1,3 +1,12 @@
+# Set the name of the world that you want the plugin to be active in
+# Set this value to empty quotations
+world-name: 'world'
+
+# You can set the warning message that will be sent as a title message to all teleportable players using /ctp warn
+# If you want to disable this, set the title AND subtitle values to empty quotations ''
+warning-title: 'Church is about to begin'
+warning-subtitle: 'You will be teleported to your seat shortly'
+
 # Should players be sent a chat message after being teleported?
 message-players-on-tp: true
 
@@ -13,3 +22,4 @@ message-players-on-return: true
 on-return-messages:
   - '&aChurch is over and you have been returned to your original location'
 # - 'You can specify multiple message lines to be sent if you want'
+

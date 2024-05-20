@@ -46,6 +46,8 @@ public final class CustomTeleportPlugin extends JavaPlugin {
     }
     @Override
     public void onDisable() {
+        TeleportManager tpManager = new TeleportManager();
+        tpManager.returnAllPlayers(null);
         locationManager = new LocationManager();
         locationManager.refresh();
         FileManager fileManager = new FileManager();

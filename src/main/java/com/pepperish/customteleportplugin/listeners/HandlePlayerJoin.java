@@ -2,9 +2,10 @@ package com.pepperish.customteleportplugin.listeners;
 
 
 import com.pepperish.customteleportplugin.managers.LocationManager;
-import com.pepperish.customteleportplugin.commands.subcommands.TpAllCommand;
+import com.pepperish.customteleportplugin.commands.subcommands.confirmables.mutuallyexclusive.TpAllCommand;
 import com.pepperish.customteleportplugin.managers.TeleportManager;
 import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
+import com.pepperish.customteleportplugin.util.CommandState;
 import com.pepperish.customteleportplugin.util.Permission;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -39,7 +40,7 @@ public class HandlePlayerJoin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player joiningPlayer = e.getPlayer();
-
+        CommandState tpAllCommandState = TpAllCommand.
         if (!TpAllCommand.getCommandIsActive()) return;
         if (!joiningPlayer.hasPermission(shouldBeTeleportedPermission)) return;
 
@@ -52,10 +53,9 @@ public class HandlePlayerJoin implements Listener {
                 chatMessenger.sendChat(joiningPlayer, onTpMessages);
             }
         } else {
-            chatMessenger.messageAdmins(List.of(
-                    "&e[CustomTeleport] &6(sent to all CTP admins)",
-                    String.format("&cWARNING: Player &f%s &cjoined but couldn't be teleported", joiningPlayer.getName()),
-                    "&cbecause there weren't enough set block locations!"));
+            chatMessenger.messageAdmins(String.format("&cWARNING: Player &f%s &cjoined but couldn't\n" +
+                    "&cbe teleported because there weren't enough set block locations!", joiningPlayer.getName()));
+
         }
     }
 }

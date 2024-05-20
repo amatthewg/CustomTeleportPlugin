@@ -1,10 +1,18 @@
 package com.pepperish.customteleportplugin.commands.subcommands;
 
-import com.pepperish.customteleportplugin.commands.SubCommand;
-import com.pepperish.customteleportplugin.util.Permission;
+import com.pepperish.customteleportplugin.commands.CommandManager;
+import com.pepperish.customteleportplugin.commands.subcommands.confirmables.ConfirmableSubcommand;
+import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
 import org.bukkit.entity.Player;
 
-public class CancelCommand extends SubCommand {
+import java.util.Map;
+
+public class CancelCommand extends Subcommand {
+
+    private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
+
+    public CancelCommand() {}
+
     @Override
     public String getName() {
         return "cancel";
@@ -12,7 +20,7 @@ public class CancelCommand extends SubCommand {
 
     @Override
     public String getDescription() {
-        return "Cancel the execution of &9/ctp tpall &6or &9/ctp return";
+        return "Cancel the execution of a command that needs confirmation to be executed.";
     }
 
     @Override
@@ -20,13 +28,22 @@ public class CancelCommand extends SubCommand {
         return "/ctp cancel";
     }
 
-    @Override
-    public String getPermissionString() {
-        return Permission.CTP_ADMIN.getString();
-    }
 
     @Override
     public void perform(Player sender, String[] args) {
-
+        Map<ConfirmableSubcommand, Boolean> commandConfirmationStates = CommandManager.getCommandConfirmationStates();
+        int canclledCommandCount = 0;
+        for(ConfirmableSubcommand key : commandConfirmationStates.keySet()) {
+            if(commandConfirmationStates.get(key)) {
+                CommandManager.addCommandConfirmationState(key, false);
+                chatMessenger.sendChat(sender, String.format("&a%s was cancelled!", key.getSyntax()));
+                canclledCommandCount++;
+            }
+        }
+        if(canclledCommandCount == 0) {
+            chatMessenger.sendChat(sender, "&cThere were no commands to be cancelled!");
+        }
     }
+
+
 }

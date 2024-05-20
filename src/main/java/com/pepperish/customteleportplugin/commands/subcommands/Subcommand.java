@@ -1,13 +1,14 @@
-package com.pepperish.customteleportplugin.commands;
+package com.pepperish.customteleportplugin.commands.subcommands;
 
 import org.bukkit.entity.Player;
 
-public abstract class SubCommand {
+public abstract class Subcommand {
+
+
 
     public abstract String getName();
     public abstract String getDescription();
     public abstract String getSyntax();
 
-    public abstract String getPermissionString();
     public abstract void perform(Player sender, String[] args);
 }

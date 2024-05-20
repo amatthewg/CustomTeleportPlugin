@@ -18,13 +18,10 @@ public class PlayerChatMessenger {
     public void messageAdmins(String message) {
         Bukkit.getOnlinePlayers().stream()
                 .filter(p -> p.hasPermission(ctpAdmin))
-                .forEach(p -> sendChat(p, message));
-    }
-
-    public void messageAdmins(List<String> messages) {
-        Bukkit.getOnlinePlayers().stream()
-                .filter(p -> p.hasPermission(ctpAdmin))
-                .forEach(p -> sendChat(p, messages));
+                .forEach(p -> {
+                    sendChat(p, "&b(Sent to all CTP admins)");
+                    sendChat(p, message);
+                });
     }
 
     public void sendChat(Player target, String message) {

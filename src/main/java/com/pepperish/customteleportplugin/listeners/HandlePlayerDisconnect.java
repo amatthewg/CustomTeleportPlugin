@@ -1,7 +1,7 @@
 package com.pepperish.customteleportplugin.listeners;
 
 import com.pepperish.customteleportplugin.managers.LocationManager;
-import com.pepperish.customteleportplugin.commands.subcommands.TpAllCommand;
+import com.pepperish.customteleportplugin.commands.subcommands.confirmables.mutuallyexclusive.TpAllCommand;
 import com.pepperish.customteleportplugin.util.Permission;
 import com.pepperish.customteleportplugin.managers.TeleportManager;
 import org.bukkit.Location;
@@ -21,7 +21,7 @@ public class HandlePlayerDisconnect implements Listener {
 
     private static final LocationManager locationManager = new LocationManager();
 
-    private static TeleportManager tpManager = new TeleportManager();
+    private static final TeleportManager tpManager = new TeleportManager();
 
     @EventHandler
     public void onPlayerDisconnect(PlayerQuitEvent e) {

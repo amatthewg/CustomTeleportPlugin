@@ -1,11 +1,17 @@
-# Set the name of the world that you want the plugin to be active in
-# Set this value to empty quotations
-world-name: 'world'
+# Set the message that will be displayed to players when they try to run a CTP command, but don't have permission
+no-permission-message: "&cYou don't have permission!"
+
+# When the commands "/ctp tpall", "/ctp return", "/ctp warn", or "/ctp reload" are executed,
+# should all CTP admins be warned about who executed the command?
+warn-admins-on-execute: true
+
+# When all players are teleported or returned, should all CTP admins be advised of the success or failure
+# of the teleportation/returning?
+warn-admins-on-teleport: true
 
 # You can set the warning message that will be sent as a title message to all teleportable players using /ctp warn
-# If you want to disable this, set the title AND subtitle values to empty quotations ''
-warning-title: 'Church is about to begin'
-warning-subtitle: 'You will be teleported to your seat shortly'
+warning-title: '&a&lChurch is about to begin'
+warning-subtitle: '&lYou will be teleported to your seat shortly'
 
 # Should players be sent a chat message after being teleported?
 message-players-on-tp: true

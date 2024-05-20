@@ -1,7 +1,5 @@
 package com.pepperish.customteleportplugin.commands.subcommands;
 
-import com.pepperish.customteleportplugin.commands.SubCommand;
-import com.pepperish.customteleportplugin.util.Permission;
 import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
 import com.pepperish.customteleportplugin.util.CustomTpTool;
 import org.bukkit.entity.Player;
@@ -9,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
-public class ToolCommand extends SubCommand {
+public class ToolCommand extends Subcommand {
 
     private static PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
@@ -27,11 +25,6 @@ public class ToolCommand extends SubCommand {
     @Override
     public String getSyntax() {
         return "/ctp tool";
-    }
-
-    @Override
-    public String getPermissionString() {
-        return Permission.CTP_ADMIN.getString();
     }
 
     @Override

@@ -35,32 +35,30 @@ public class TeleportManager {
         player.setJumping(false);
     }
 
-    public void tpAllPlayers() {
+    public Optional<Integer> tpAllPlayers() {
         boolean playersShouldBeMessagedOnTeleport = plugin.getConfig().getBoolean("message-players-on-tp");
         List<String> onTpMessages = plugin.getConfig().getStringList("on-tp-messages");
         AtomicInteger teleportedPlayerCount = new AtomicInteger(0);
-        Bukkit.getOnlinePlayers().stream()
+        boolean allTeleported = Bukkit.getOnlinePlayers().stream()
                 .filter(p -> p.hasPermission(shouldBeTeleportedPermission))
-                .forEach(p -> {
+                .allMatch(p -> {
                     Optional<Location> nextAvailableLocation = locationManager.getNextAvailableLocation(p);
-                    if(nextAvailableLocation.isPresent()) {
+                    if (nextAvailableLocation.isPresent()) {
                         tpPlayer(p, nextAvailableLocation.get());
                         if (playersShouldBeMessagedOnTeleport) {
                             chatMessenger.sendChat(p, onTpMessages);
                         }
                         teleportedPlayerCount.incrementAndGet();
-                    }
-                    else {
-                        List<String> messages = List.of(
-                                "&e[CustomTeleport] &6(sent to all CTP admins),",
-                                "&cWARNING: CTP could not teleport all players because there weren't enough set block locations!"
-                        );
-                        chatMessenger.messageAdmins(messages);
-                        return;
+                        return true;
+                    } else {
+                        return false;
                     }
                 });
-
-
+        if(allTeleported) {
+            return Optional.of(teleportedPlayerCount.get());
+        }
+        else return Optional.empty();
+        return Optional.of(teleportedPlayerCount.get());
         chatMessenger.messageAdmins(String.format("&e[CustomTeleport] &6(sent to all CTP admins)\n" +
                 "&aSuccessfully teleported &e%s &aplayers", teleportedPlayerCount.get()));
 

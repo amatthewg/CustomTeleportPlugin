@@ -1,8 +1,6 @@
 package com.pepperish.customteleportplugin.commands.subcommands;
 
 import com.pepperish.customteleportplugin.managers.LocationManager;
-import com.pepperish.customteleportplugin.commands.SubCommand;
-import com.pepperish.customteleportplugin.util.Permission;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 // /ctp viewall
-public class ViewAllCommand extends SubCommand {
+public class ViewAllCommand extends Subcommand {
 
     private static LocationManager locationManager = new LocationManager();
 
@@ -39,9 +37,16 @@ public class ViewAllCommand extends SubCommand {
     }
 
     @Override
-    public String getPermissionString() {
-        return Permission.CTP_ADMIN.getString();
+    public boolean shouldBeConfirmed() {
+        return false;
     }
+
+    @Override
+    public String getConfirmationMessage() {
+        return null;
+    }
+
+
 
     @Override
     public void perform(Player sender, String[] args) {

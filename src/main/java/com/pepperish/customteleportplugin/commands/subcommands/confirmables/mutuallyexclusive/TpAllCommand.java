@@ -1,7 +1,6 @@
 package com.pepperish.customteleportplugin.commands.subcommands.confirmables.mutuallyexclusive;
 
-import com.pepperish.customteleportplugin.commands.subcommands.confirmables.ConfirmableSubcommand;
-import com.pepperish.customteleportplugin.managers.TeleportManager;
+import com.pepperish.customteleportplugin.managers.TeleportFreezeManager;
 import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
 import com.pepperish.customteleportplugin.util.CommandState;
 import org.bukkit.entity.Player;
@@ -14,17 +13,23 @@ public class TpAllCommand extends MutuallyExclusiveCommand {
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
-    private static final TeleportManager tpManager = new TeleportManager();
+    private static final TeleportFreezeManager tpManager = new TeleportFreezeManager();
+
+    private static final String notEnoughBlocksMsg = "&cWARNING: Could not teleport all players because there\n" +
+            "weren't enough set block locations!";
 
     private static CommandState commandState;
 
     private static JavaPlugin plugin;
+    
 
     private static boolean shouldWarnAdminsOnTeleportResult;
 
+
+
     public TpAllCommand(JavaPlugin pl) {
         plugin = pl;
-        setCommandState(CommandState.READY);
+        setCommandState(CommandState.NOT_CURRENTLY_EXECUTED);
         shouldWarnAdminsOnTeleportResult = plugin.getConfig().getBoolean("warn-admins-on-teleport");
     }
 
@@ -44,16 +49,6 @@ public class TpAllCommand extends MutuallyExclusiveCommand {
     public String getConfirmationMessage() { return "WARNING: You are about to teleport the players to their blocks!"; }
 
     @Override
-    public boolean isCommandActive() {
-        return false;
-    }
-
-    @Override
-    public String getIsActiveMessage() {
-        return null;
-    }
-
-    @Override
     public void perform(Player sender, String[] args) {
         Optional<Integer> teleportedPlayerCount = tpManager.tpAllPlayers();
         if(teleportedPlayerCount.isPresent()) {
@@ -68,32 +63,23 @@ public class TpAllCommand extends MutuallyExclusiveCommand {
         }
         else {
             if(shouldWarnAdminsOnTeleportResult) {
-                chatMessenger.messageAdmins("&cWARNING: Could not teleport all players because there\n" +
-                        "weren't enough set block locations!");
+                chatMessenger.messageAdmins(notEnoughBlocksMsg);
                 return;
             }
-            chatMessenger.sendChat(sender, "&cWARNING: Could not teleport all players because there\n" +
-                    "weren't enough set block locations!");
+            chatMessenger.sendChat(sender, notEnoughBlocksMsg);
         }
-        setCommandState(CommandState.NOT_READY);
-
+        setCommandState(CommandState.CURRENTLY_EXECUTED);
     }
 
     @Override
-    public CommandState getCommandState() {
-        return commandState;
-    }
+    public CommandState getCommandState() { return commandState; }
 
     @Override
-    public void setCommandState(CommandState state) {
-        commandState = state;
-    }
+    public void setCommandState(CommandState state) { commandState = state; }
 
     @Override
-    public String getNotReadyMessage() { return "the players are currently teleported!"; }
+    public String getNotReadyMessage() { return "the tpall command is currently executed!"; }
 
     @Override
-    public MutuallyExclusiveCommand getMutual() {
-        return new ReturnCommand();
-    }
+    public MutuallyExclusiveCommand getMutual() { return new ReturnCommand(); }
 }

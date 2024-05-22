@@ -9,23 +9,17 @@ import java.util.Map;
 
 public class ToolCommand extends Subcommand {
 
-    private static PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
+    private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
-    private static ItemStack customTpTool = CustomTpTool.getItemStack();
+    private static final ItemStack customTpTool = CustomTpTool.getItemStack();
     @Override
-    public String getName() {
-        return "tool";
-    }
+    public String getName() { return "tool"; }
 
     @Override
-    public String getDescription() {
-        return "Retrieve the block selection tool";
-    }
+    public String getDescription() { return "Retrieve the block selection tool"; }
 
     @Override
-    public String getSyntax() {
-        return "/ctp tool";
-    }
+    public String getSyntax() { return "/ctp tool"; }
 
     @Override
     public void perform(Player sender, String[] args) {
@@ -35,7 +29,5 @@ public class ToolCommand extends Subcommand {
         } else {
             chatMessenger.sendChat(sender, "&cCould not add the tool to your inventory!");
         }
-
-
     }
 }

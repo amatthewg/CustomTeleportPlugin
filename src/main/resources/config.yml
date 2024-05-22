@@ -21,6 +21,14 @@ on-tp-messages:
   - '&aYou have been teleported to your seat and are frozen until church is over.'
 # - 'You can specify multiple message lines to be sent if you want'
 
+# When the players are teleported, all commands will be disabled for those players except for these commands:
+enabled-commands:
+  - 'bible'
+  - 'openbible'
+
+# When a player is teleported and they attempt to execute a non-exempt command, what message should they be sent?
+command-not-allowed-message: "&c&lHey! &3Sorry, you can't use that command right now."
+
 # Should players be sent a chat message after being returned?
 message-players-on-return: true
 

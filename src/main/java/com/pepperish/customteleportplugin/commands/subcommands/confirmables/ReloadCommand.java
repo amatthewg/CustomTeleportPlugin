@@ -20,10 +20,10 @@ public class ReloadCommand extends ConfirmableSubcommand {
 
     private static JavaPlugin plugin;
 
-    private static FileManager fileManager = new FileManager();
-    private static LocationManager locationManager = new LocationManager();
+    private static final FileManager fileManager = new FileManager();
+    private static final LocationManager locationManager = new LocationManager();
 
-    private static TeleportStateManager tpStateManaager = new TeleportStateManager();
+    private static final TeleportStateManager tpStateManaager = new TeleportStateManager();
 
     private static PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
@@ -55,6 +55,7 @@ public class ReloadCommand extends ConfirmableSubcommand {
 
     @Override
     public void perform(Player sender, String[] args) {
+
         if(tpStateManaager.getCurrentTeleportState() == TeleportState.TPALL_ACTIVE) {
             chatMessenger.sendChat(sender, "&cCannot reload until &e/ctp return &cis executed!");
             return;

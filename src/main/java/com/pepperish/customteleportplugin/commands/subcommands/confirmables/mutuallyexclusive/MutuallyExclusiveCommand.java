@@ -1,6 +1,5 @@
 package com.pepperish.customteleportplugin.commands.subcommands.confirmables.mutuallyexclusive;
 
-import com.pepperish.customteleportplugin.commands.CommandManager;
 import com.pepperish.customteleportplugin.commands.subcommands.confirmables.ConfirmableSubcommand;
 import com.pepperish.customteleportplugin.util.CommandState;
 

@@ -1,6 +1,6 @@
 package com.pepperish.customteleportplugin.util;
 
 public enum CommandState {
-    READY,
-    NOT_READY;
+    NOT_CURRENTLY_EXECUTED,
+    CURRENTLY_EXECUTED;
 }

@@ -9,11 +9,9 @@ import java.util.List;
 
 public class PlayerChatMessenger {
 
-    private static String ctpAdmin = Permission.CTP_ADMIN.getString();
+    private static final String ctpAdmin = Permission.CTP_ADMIN.getString();
 
-    public PlayerChatMessenger() {
-
-    }
+    public PlayerChatMessenger() {}
 
     public void messageAdmins(String message) {
         Bukkit.getOnlinePlayers().stream()
@@ -29,6 +27,6 @@ public class PlayerChatMessenger {
     }
 
     public void sendChat(Player target, List<String> messages) {
-        messages.forEach(msg -> target.sendMessage(ChatColor.translateAlternateColorCodes('&', msg)));
+        messages.forEach(msg -> sendChat(target, msg));
     }
 }

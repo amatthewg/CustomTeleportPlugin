@@ -3,7 +3,7 @@ package com.pepperish.customteleportplugin.listeners;
 
 import com.pepperish.customteleportplugin.managers.LocationManager;
 import com.pepperish.customteleportplugin.commands.subcommands.confirmables.mutuallyexclusive.TpAllCommand;
-import com.pepperish.customteleportplugin.managers.TeleportManager;
+import com.pepperish.customteleportplugin.managers.TeleportFreezeManager;
 import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
 import com.pepperish.customteleportplugin.util.CommandState;
 import com.pepperish.customteleportplugin.util.Permission;
@@ -29,7 +29,7 @@ public class HandlePlayerJoin implements Listener {
 
     private static PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
-    private static TeleportManager tpManager = new TeleportManager();
+    private static TeleportFreezeManager tpManager = new TeleportFreezeManager();
 
     private static JavaPlugin plugin;
 

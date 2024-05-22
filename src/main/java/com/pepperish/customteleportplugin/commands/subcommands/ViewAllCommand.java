@@ -1,6 +1,7 @@
 package com.pepperish.customteleportplugin.commands.subcommands;
 
 import com.pepperish.customteleportplugin.managers.LocationManager;
+import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,9 +15,11 @@ import java.util.Set;
 // /ctp viewall
 public class ViewAllCommand extends Subcommand {
 
-    private static LocationManager locationManager = new LocationManager();
+    private static final LocationManager locationManager = new LocationManager();
 
-    private static Map<Location, Material> originalBlocksMap = new HashMap<>();
+    private static final Map<Location, Material> originalBlocksMap = new HashMap<>();
+
+    private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
     private static boolean commandWasRun = false;
 
@@ -36,16 +39,6 @@ public class ViewAllCommand extends Subcommand {
         return "/ctp viewall";
     }
 
-    @Override
-    public boolean shouldBeConfirmed() {
-        return false;
-    }
-
-    @Override
-    public String getConfirmationMessage() {
-        return null;
-    }
-
 
 
     @Override
@@ -58,9 +51,8 @@ public class ViewAllCommand extends Subcommand {
                 originalBlocksMap.put(blockLocation, block.getType());
                 block.setType(Material.RED_WOOL);
             }
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
-                    "&aSuccessfully changed &e%s &ablocks to Red Wool", blockLocations.size()
-            )));
+            chatMessenger.sendChat(sender, String.format("&aSuccessfully changed &e%d &ablocks to Red Wool",
+                    blockLocations.size()));
         }
         else { // Revert blocks back to original type
             commandWasRun = false;
@@ -69,9 +61,8 @@ public class ViewAllCommand extends Subcommand {
                 Material originalMaterial = originalBlocksMap.get(key);
                 block.setType(originalMaterial);
             }
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
-                    "&aSuccessfully reverted &e%s &ablocks to original state", originalBlocksMap.size()
-            )));
+            chatMessenger.sendChat(sender, String.format("&aSuccessfully reverted &e%d &ablocks to original state",
+                    originalBlocksMap.size()));
             originalBlocksMap.clear();
         }
 

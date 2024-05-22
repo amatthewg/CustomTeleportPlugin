@@ -1,45 +1,32 @@
 package com.pepperish.customteleportplugin.commands.subcommands.confirmables.mutuallyexclusive;
 
-import com.pepperish.customteleportplugin.commands.subcommands.confirmables.ConfirmableSubcommand;
-import com.pepperish.customteleportplugin.managers.LocationManager;
-import com.pepperish.customteleportplugin.managers.TeleportManager;
-import com.pepperish.customteleportplugin.messengers.PlayerChatMessenger;
+import com.pepperish.customteleportplugin.managers.TeleportFreezeManager;
 import com.pepperish.customteleportplugin.util.CommandState;
-import com.pepperish.customteleportplugin.util.Permission;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+
+import java.awt.event.TextEvent;
 
 public class ReturnCommand extends MutuallyExclusiveCommand {
+
+    private static final TeleportFreezeManager tpFreezeManager = new TeleportFreezeManager();
 
     private CommandState commandState;
 
     private MutuallyExclusiveCommand mutualCommand = null;
 
-    public ReturnCommand() {
-
-    }
-
     public ReturnCommand() {}
 
     @Override
-    public String getName() {
-        return "return";
-    }
+    public String getName() { return "return"; }
 
     @Override
-    public String getDescription() {
-        return "Return all players to their original location";
-    }
+    public String getDescription() { return "Return all players to their original location"; }
 
     @Override
-    public String getSyntax() {
-        return "/ctp return";
-    }
+    public String getSyntax() { return "/ctp return"; }
 
     @Override
-    public void perform(Player sender, String[] args) {
-
-    }
+    public void perform(Player sender, String[] args) { tpFreezeManager.returnAllPlayers(sender); }
 
     @Override
     public String getConfirmationMessage() {
@@ -48,22 +35,14 @@ public class ReturnCommand extends MutuallyExclusiveCommand {
 
 
     @Override
-    public CommandState getCommandState() {
-        return null;
-    }
+    public CommandState getCommandState() { return commandState; }
 
     @Override
-    public void setCommandState(CommandState state) {
-
-    }
+    public void setCommandState(CommandState state) { commandState = state; }
 
     @Override
-    public String getNotReadyMessage() {
-        return "the players have not been teleported yet!";
-    }
+    public String getNotReadyMessage() { return "the tpall command has not been executed!"; }
 
     @Override
-    public MutuallyExclusiveCommand getMutual() {
-        return new TpAllCommand();
-    }
+    public MutuallyExclusiveCommand getMutual() { return new TpAllCommand(); }
 }

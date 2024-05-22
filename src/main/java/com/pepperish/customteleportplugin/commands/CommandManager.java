@@ -28,11 +28,13 @@ public class CommandManager implements CommandExecutor {
 
     private static final Map<ConfirmableSubcommand, Boolean> commandConfirmationStates = new HashMap<>();
 
+    private static final String ctpAdminPermission = Permission.CTP_ADMIN.getString();
+
     private static JavaPlugin plugin;
 
     private static String noPermissionMsg = null;
 
-    private static boolean adminsShouldBeWarnedOnCommandExecute;
+    private static Boolean adminsShouldBeWarnedOnCommandExecute = null;
 
     public static Map<ConfirmableSubcommand, Boolean> getCommandConfirmationStates() {
         return commandConfirmationStates;
@@ -50,7 +52,7 @@ public class CommandManager implements CommandExecutor {
         subcommands.add(new ViewAllCommand());
         TpAllCommand tpAllCommand = new TpAllCommand(plugin);
         subcommands.add(tpAllCommand);
-        ReturnCommand returnCommand = new ReturnCommand(plugin);
+        ReturnCommand returnCommand = new ReturnCommand();
         subcommands.add(returnCommand);
         subcommands.add(new CancelCommand());
         WarnCommand warnCommand = new WarnCommand(plugin);
@@ -65,10 +67,9 @@ public class CommandManager implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-
         if (!(commandSender instanceof Player)) return true;
         Player sender = (Player) commandSender;
-        if (!sender.hasPermission(Permission.CTP_ADMIN.getString())) {
+        if (!sender.hasPermission(ctpAdminPermission)) {
             chatMessenger.sendChat(sender, noPermissionMsg);
             return true;
         }
@@ -79,43 +80,43 @@ public class CommandManager implements CommandExecutor {
 
         for (Subcommand subcommand : subcommands) {
             if (strings[0].equalsIgnoreCase(subcommand.getName())) {
+                if (subcommand instanceof MutuallyExclusiveCommand) {
+                    MutuallyExclusiveCommand mutuallyExclusiveCommand = (MutuallyExclusiveCommand) subcommand;
+                    CommandState commandState = mutuallyExclusiveCommand.getCommandState();
+                    if (commandState.equals(CommandState.CURRENTLY_EXECUTED)) {
+                        chatMessenger.sendChat(sender, String.format(
+                                "&cCannot execute command &a%s &cbecause %s", mutuallyExclusiveCommand.getSyntax(),
+                                mutuallyExclusiveCommand.getNotReadyMessage()
+                        ));
+                        return true;
+                    }
+                }
                 if (subcommand instanceof ConfirmableSubcommand) {
                     ConfirmableSubcommand confirmableSubcommand = (ConfirmableSubcommand) subcommand;
-                    if(confirmableSubcommand instanceof MutuallyExclusiveCommand) {
-                        MutuallyExclusiveCommand targetCommand = (MutuallyExclusiveCommand) confirmableSubcommand;
-                        if(targetCommand.getCommandState().equals(CommandState.NOT_READY)){
-                            sender.sendMessage(String.format(
-                                    "&cCannot execute command &a%s &cbecause %s", confirmableSubcommand.getSyntax(),
-                                    targetCommand.getNotReadyMessage()));
-                            return true;
-                        }
-                    }
-                    Boolean commandWasRun = commandConfirmationStates.get(confirmableSubcommand);
+                    boolean commandWasRun = commandConfirmationStates.get(confirmableSubcommand);
                     if (commandWasRun) {
-                        commandConfirmationStates.put(confirmableSubcommand, false);
                         confirmableSubcommand.perform(sender, strings);
-                        if(adminsShouldBeWarnedOnCommandExecute) {
-                            chatMessenger.messageAdmins(String.format("&b(Sent to all CTP admins)\n" +
-                                    "&cWARNING: &a%s &cjust executed command &a%s", sender.getName(),
-                                    confirmableSubcommand.getSyntax()));
+                        commandConfirmationStates.put(confirmableSubcommand, false);
+                        if (adminsShouldBeWarnedOnCommandExecute) {
+                            chatMessenger.messageAdmins(String.format("&cWARNING: &a%s &cjust executed command &a%s",
+                                    sender.getName(), confirmableSubcommand.getSyntax()));
                         }
-                        return true;
                     } else {
                         commandConfirmationStates.put(confirmableSubcommand, true);
                         chatMessenger.sendChat(sender, "&c" + confirmableSubcommand.getConfirmationMessage());
                         chatMessenger.sendChat(sender, String.format(
-                                "&cRe-enter &a%s &cto confirm, or use &a/ctp cancel &cto cancel.", confirmableSubcommand.getSyntax()
+                                "&cRe-enter &a%s &cto confirm, or use &a/ctp cancel &cto cancel.",
+                                confirmableSubcommand.getSyntax()
                         ));
-                        // TODO: if one admin runs a confirmablesubcommand first, then another admin runs it
-                        // right after them, it won't ask the second admin for confirmation
-                        return true;
                     }
+                    return true;
                 } else {
                     subcommand.perform(sender, strings);
                     return true;
                 }
             }
         }
+        sendCommandHelp(sender);
         return true;
     }
 
@@ -128,6 +129,4 @@ public class CommandManager implements CommandExecutor {
         }
         chatMessenger.sendChat(target, "&b----------------------------");
     }
-
-
 }

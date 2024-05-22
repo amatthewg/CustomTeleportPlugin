@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TeleportManager {
+public class TeleportFreezeManager {
 
     private static PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
@@ -22,9 +22,9 @@ public class TeleportManager {
     private static boolean playersAreTeleported = false;
 
     private static JavaPlugin plugin;
-    public TeleportManager(JavaPlugin pl) { plugin = pl; }
+    public TeleportFreezeManager(JavaPlugin pl) { plugin = pl; }
 
-    public TeleportManager() {}
+    public TeleportFreezeManager() {}
 
 
 
@@ -58,11 +58,6 @@ public class TeleportManager {
             return Optional.of(teleportedPlayerCount.get());
         }
         else return Optional.empty();
-        return Optional.of(teleportedPlayerCount.get());
-        chatMessenger.messageAdmins(String.format("&e[CustomTeleport] &6(sent to all CTP admins)\n" +
-                "&aSuccessfully teleported &e%s &aplayers", teleportedPlayerCount.get()));
-
-        playersAreTeleported = true;
     }
     public void returnPlayer(Player player, Location location) {
         player.teleportAsync(location);

@@ -7,16 +7,14 @@ import java.util.*;
 
 public class LocationManager {
 
-    private static Set<Location> availableBlockLocations = new HashSet<>();
+    private static final Set<Location> availableBlockLocations = new HashSet<>();
 
-    private static Map<UUID, Location> occupiedBlockLocations = new HashMap<>();
+    private static final Map<UUID, Location> occupiedBlockLocations = new HashMap<>();
 
-    private static Map<UUID, Location> originalPlayerLocations = new HashMap<>();
+    private static final Map<UUID, Location> originalPlayerLocations = new HashMap<>();
 
 
-    public LocationManager(Set<Location> blockLocations) {
-        availableBlockLocations.addAll(blockLocations);
-    }
+    public LocationManager(Set<Location> blockLocations) { availableBlockLocations.addAll(blockLocations); }
 
     public LocationManager() {}
 
@@ -30,17 +28,13 @@ public class LocationManager {
     }
 
     public Optional<Location> getReturnLocation(Player player) {
-        Location result = occupiedBlockLocations.get(player.getUniqueId());
+        Location result = occupiedBlockLocations.remove(player.getUniqueId());
         return result == null ? Optional.empty() : Optional.of(result);
     }
 
-    public boolean addAvailableBlockLocation(Location location) {
-        return availableBlockLocations.add(location);
-    }
+    public boolean addAvailableBlockLocation(Location location) { return availableBlockLocations.add(location); }
 
-    public boolean removeAvailableBlockLocation(Location location) {
-        return availableBlockLocations.remove(location);
-    }
+    public boolean removeAvailableBlockLocation(Location location) { return availableBlockLocations.remove(location); }
 
     public Set<Location> getAllBlockLocations() {
         Set<Location> result = new HashSet<>(availableBlockLocations);

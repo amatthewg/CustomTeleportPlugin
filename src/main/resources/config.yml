@@ -7,6 +7,8 @@ warn-admins-on-execute: true
 
 # When all players are teleported or returned, should all CTP admins be advised of the success or failure
 # of the teleportation/returning?
+# Note: if a player joins the server while tpall is active, and there isn't a block location available for them,
+# all CTP admins will be warned accordingly.
 warn-admins-on-teleport: true
 
 # You can set the warning message that will be sent as a title message to all teleportable players using /ctp warn
@@ -14,6 +16,7 @@ warning-title: '&a&lChurch is about to begin'
 warning-subtitle: '&lYou will be teleported to your seat shortly'
 
 # Should players be sent a chat message after being teleported?
+# Note: this includes if the tpall command is active, and a teleportable player joins the server.
 message-players-on-tp: true
 
 # If above is true, you can set the specific message you want them to be sent
@@ -22,11 +25,12 @@ on-tp-messages:
 # - 'You can specify multiple message lines to be sent if you want'
 
 # When the players are teleported, all commands will be disabled for those players except for these commands:
+# (you must enter the commands without a '/' preceding them)
 enabled-commands:
   - 'bible'
   - 'openbible'
 
-# When a player is teleported and they attempt to execute a non-exempt command, what message should they be sent?
+# When a player is teleported, and they attempt to execute a non-exempt command, what message should they be sent?
 command-not-allowed-message: "&c&lHey! &3Sorry, you can't use that command right now."
 
 # Should players be sent a chat message after being returned?

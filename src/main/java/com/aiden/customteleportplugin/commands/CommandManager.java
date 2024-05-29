@@ -13,6 +13,7 @@ import com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusiv
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusive.TpAllCommand;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
 import com.aiden.customteleportplugin.util.Permission;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,9 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CommandManager implements CommandExecutor {
 
@@ -31,20 +30,16 @@ public class CommandManager implements CommandExecutor {
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
-    private static final Map<ConfirmableSubcommand, Boolean> commandConfirmationStates = new HashMap<>();
-
     private static final String ctpAdminPermission = Permission.CTP_ADMIN.getString();
 
     private static String noPermissionMsg = null;
 
     private static Boolean adminsShouldBeWarnedOnCommandExecute = null;
 
-    public static Map<ConfirmableSubcommand, Boolean> getCommandConfirmationStates() {
-        return commandConfirmationStates;
-    }
-
-    public static void addCommandConfirmationState(ConfirmableSubcommand subcommand, boolean state) {
-        commandConfirmationStates.put(subcommand, state);
+    public static List<ConfirmableSubcommand> getConfirmableSubcommands() {
+        List<ConfirmableSubcommand> result = new ArrayList<>();
+        subcommands.forEach(cmd -> {if(cmd instanceof ConfirmableSubcommand) result.add((ConfirmableSubcommand) cmd);});
+        return result;
     }
 
     public CommandManager(JavaPlugin pl) {
@@ -54,22 +49,21 @@ public class CommandManager implements CommandExecutor {
         subcommands.add(new ViewAllCommand());
         TpAllCommand tpAllCommand = new TpAllCommand(pl);
         subcommands.add(tpAllCommand);
-        ReturnCommand returnCommand = new ReturnCommand();
+        ReturnCommand returnCommand = new ReturnCommand(pl);
         subcommands.add(returnCommand);
         subcommands.add(new CancelCommand());
         WarnCommand warnCommand = new WarnCommand(pl);
         subcommands.add(warnCommand);
         ReloadCommand reloadCommand = new ReloadCommand(pl);
         subcommands.add(reloadCommand);
-        commandConfirmationStates.put(tpAllCommand, false);
-        commandConfirmationStates.put(returnCommand, false);
-        commandConfirmationStates.put(warnCommand, false);
-        commandConfirmationStates.put(reloadCommand, false);
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player)) return true;
+        if (!(commandSender instanceof Player)) {
+            commandSender.sendMessage("Command can only be used in-game");
+            return true;
+        }
         Player sender = (Player) commandSender;
         if (!sender.hasPermission(ctpAdminPermission)) {
             chatMessenger.sendChat(sender, noPermissionMsg);
@@ -94,16 +88,16 @@ public class CommandManager implements CommandExecutor {
                 }
                 if (subcommand instanceof ConfirmableSubcommand) {
                     ConfirmableSubcommand confirmableSubcommand = (ConfirmableSubcommand) subcommand;
-                    boolean commandWasRun = commandConfirmationStates.get(confirmableSubcommand);
-                    if (commandWasRun) {
+                    if(confirmableSubcommand.isConfirmed()) {
+                        confirmableSubcommand.setIsConfirmed(false);
                         confirmableSubcommand.perform(sender, strings);
-                        commandConfirmationStates.put(confirmableSubcommand, false);
-                        if (adminsShouldBeWarnedOnCommandExecute) {
+                        if(adminsShouldBeWarnedOnCommandExecute) {
                             chatMessenger.messageAdmins(String.format("&cWARNING: &a%s &cjust executed command &a%s",
                                     sender.getName(), confirmableSubcommand.getSyntax()));
                         }
-                    } else {
-                        commandConfirmationStates.put(confirmableSubcommand, true);
+                    }
+                    else {
+                        confirmableSubcommand.setIsConfirmed(true);
                         chatMessenger.sendChat(sender, "&c" + confirmableSubcommand.getConfirmationMessage());
                         chatMessenger.sendChat(sender, String.format(
                                 "&cRe-enter &a%s &cto confirm, or use &a/ctp cancel &cto cancel.",

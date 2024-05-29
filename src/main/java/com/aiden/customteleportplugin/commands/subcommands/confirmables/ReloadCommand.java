@@ -7,7 +7,7 @@ import com.aiden.customteleportplugin.listeners.HandlePlayerDisconnect;
 import com.aiden.customteleportplugin.listeners.HandlePlayerJoin;
 import com.aiden.customteleportplugin.listeners.HandleToolUse;
 import com.aiden.customteleportplugin.managers.BlockLocationManager;
-import com.aiden.customteleportplugin.managers.TeleportFreezeManager;
+import com.aiden.customteleportplugin.managers.TeleportManager;
 import com.aiden.customteleportplugin.util.CommandState;
 import com.aiden.customteleportplugin.managers.FileManager;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
@@ -27,6 +27,8 @@ public class ReloadCommand extends ConfirmableSubcommand {
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
     private static JavaPlugin plugin;
+
+    private boolean commandIsConfirmed = false;
 
     public ReloadCommand(JavaPlugin pl) { plugin = pl; }
 
@@ -57,13 +59,19 @@ public class ReloadCommand extends ConfirmableSubcommand {
         registerListeners();
         registerCommands();
         FileManager fm = new FileManager(plugin);
-        TeleportFreezeManager tfm = new TeleportFreezeManager(plugin);
+        TeleportManager tfm = new TeleportManager(plugin);
     }
 
     @Override
     public String getConfirmationMessage() {
         return "WARNING: You can only reload the plugin if no players are currently teleported to their blocks!";
     }
+
+    @Override
+    public boolean isConfirmed() { return this.commandIsConfirmed; }
+
+    @Override
+    public void setIsConfirmed(boolean state) { this.commandIsConfirmed = state; }
 
     private void unregisterListeners() { HandlerList.unregisterAll(plugin); }
 

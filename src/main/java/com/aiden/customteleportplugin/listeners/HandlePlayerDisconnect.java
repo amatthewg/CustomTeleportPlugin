@@ -1,17 +1,13 @@
 package com.aiden.customteleportplugin.listeners;
 
-import com.aiden.customteleportplugin.managers.TeleportFreezeManager;
+import com.aiden.customteleportplugin.managers.TeleportManager;
 import com.aiden.customteleportplugin.util.CommandState;
 import com.aiden.customteleportplugin.managers.BlockLocationManager;
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusive.TpAllCommand;
 import com.aiden.customteleportplugin.util.Permission;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import java.util.Optional;
 
 public class HandlePlayerDisconnect implements Listener {
 
@@ -19,7 +15,7 @@ public class HandlePlayerDisconnect implements Listener {
 
     private static final BlockLocationManager locationManager = new BlockLocationManager();
 
-    private static final TeleportFreezeManager tpFreezeManager = new TeleportFreezeManager();
+    private static final TeleportManager tpFreezeManager = new TeleportManager();
 
     @EventHandler
     public void onPlayerDisconnect(PlayerQuitEvent e) {

@@ -5,9 +5,11 @@ import com.aiden.customteleportplugin.util.CommandState;
 
 public abstract class ExclusiveCommand extends ConfirmableSubcommand {
 
-    public abstract CommandState getCommandState();
+    public abstract boolean isCurrentlyExecuted();
 
-    public abstract void setCommandState(CommandState state);
+    public abstract void setIsCurrentlyExecuted(boolean state);
+
+    public abstract Class<ExclusiveCommand> getMutual();
 
     public abstract String getNotReadyMessage();
 

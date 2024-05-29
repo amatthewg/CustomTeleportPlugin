@@ -24,12 +24,11 @@ public class CancelCommand extends Subcommand {
 
     @Override
     public void perform(Player sender, String[] args) {
-        Map<ConfirmableSubcommand, Boolean> commandConfirmationStates = CommandManager.getCommandConfirmationStates();
         int canclledCommandCount = 0;
-        for(ConfirmableSubcommand key : commandConfirmationStates.keySet()) {
-            if(commandConfirmationStates.get(key)) {
-                CommandManager.addCommandConfirmationState(key, false);
-                chatMessenger.sendChat(sender, String.format("&e%s &awas cancelled!", key.getSyntax()));
+        for(ConfirmableSubcommand cmd : CommandManager.getConfirmableSubcommands()) {
+            if(cmd.isConfirmed()) {
+                cmd.setIsConfirmed(false);
+                chatMessenger.sendChat(sender, String.format("&e%s &awas cancelled!", cmd.getSyntax()));
                 canclledCommandCount++;
             }
         }

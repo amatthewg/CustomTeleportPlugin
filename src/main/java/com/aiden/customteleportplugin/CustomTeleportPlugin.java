@@ -7,8 +7,11 @@ import com.aiden.customteleportplugin.listeners.HandlePlayerJoin;
 import com.aiden.customteleportplugin.listeners.HandleToolUse;
 import com.aiden.customteleportplugin.managers.FileManager;
 import com.aiden.customteleportplugin.managers.BlockLocationManager;
-import com.aiden.customteleportplugin.managers.TeleportFreezeManager;
+import com.aiden.customteleportplugin.managers.TeleportManager;
+import com.aiden.customteleportplugin.managers.WorldManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,7 +23,7 @@ import java.util.logging.Level;
 
 public final class CustomTeleportPlugin extends JavaPlugin {
 
-    private static boolean fileErrorOnStartup = false;
+    private static boolean errorOnStartup = false;
 
     private static BlockLocationManager locationManager = null;
 
@@ -52,12 +55,28 @@ public final class CustomTeleportPlugin extends JavaPlugin {
         plugin = this;
         saveDefaultConfig();
         FileManager fileManager = new FileManager(this);
-        TeleportFreezeManager teleportFreezeManager = new TeleportFreezeManager(this);
+        TeleportManager teleportManager = new TeleportManager(this);
+        WorldManager worldManager;
+        try {
+            World configuredWorld = Bukkit.getWorld(getConfig().getString("world-name"));
+            if(configuredWorld == null) throw new NullPointerException();
+            worldManager = new WorldManager(configuredWorld);
+        } catch(NullPointerException e) {
+            getLogger().log(Level.SEVERE, "FATAL: Failed to find the specified world (config.yml: 'world-name'");
+            deactivatePlugin();
+            return;
+        }
         getServer().getPluginManager().registerEvents(new HandlePlayerCommand(this), this);
         getServer().getPluginManager().registerEvents(new HandlePlayerDisconnect(), this);
         getServer().getPluginManager().registerEvents(new HandlePlayerJoin(), this);
         getServer().getPluginManager().registerEvents(new HandleToolUse(), this);
-        getCommand("ctp").setExecutor(new CommandManager(this));
+        try {
+            getCommand("ctp").setExecutor(new CommandManager(this));
+        } catch(NullPointerException e) {
+            getLogger().log(Level.SEVERE, "FATAL: Failed to initialize command 'ctp'");
+            deactivatePlugin();
+            return;
+        }
         Optional<Boolean> saveFileWasCreatedOptional = fileManager.createFileIfNotExists();
         if(saveFileWasCreatedOptional.isPresent()) {
             boolean saveFileWasCreated = saveFileWasCreatedOptional.get();
@@ -67,17 +86,22 @@ public final class CustomTeleportPlugin extends JavaPlugin {
             else {
                 Optional<Set<Location>> optionalLocationSet = fileManager.loadSetFromFile();
                 if(optionalLocationSet.isPresent()) {
+                    Set<Location> loadedLocations = optionalLocationSet.get();
+                    // Check these locations, make sure they all match the specified world in config.yml
+                    if(!worldManager.locationSetIsValid(loadedLocations)) {
+                        getLogger().log(Level.SEVERE, "FATAL: Tried to load saved block locations that are not inside the world specified in the config.yml: 'world-name'");
+                        deactivatePlugin();
+                        return;
+                    }
                     locationManager = new BlockLocationManager(optionalLocationSet.get());
                 }
                 else {
                     getLogger().log(Level.SEVERE, "FATAL: The plugin failed to load the save file on startup!");
-                    fileErrorOnStartup = true;
                     deactivatePlugin();
                 }
             }
         } else {
             getLogger().log(Level.SEVERE, "FATAL: The plugin failed to load the save file on startup!");
-            fileErrorOnStartup = true;
             deactivatePlugin();
         }
     }
@@ -85,9 +109,9 @@ public final class CustomTeleportPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("Disabling Custom Teleport!");
-        if(fileErrorOnStartup) return;
-        TeleportFreezeManager tpManager = new TeleportFreezeManager();
-        tpManager.returnAllPlayers(null);
+        if(errorOnStartup) return;
+        TeleportManager tpManager = new TeleportManager();
+        tpManager.returnAllPlayers();
         locationManager = new BlockLocationManager();
         locationManager.refresh();
         FileManager fileManager = new FileManager();
@@ -96,7 +120,7 @@ public final class CustomTeleportPlugin extends JavaPlugin {
     }
 
     public static void deactivatePlugin() {
-        fileErrorOnStartup = true;
+        errorOnStartup = true;
         HandlerList.unregisterAll(plugin);
         plugin.getCommand("ctp").setExecutor(null);
         plugin.getServer().getPluginManager().disablePlugin(plugin);

@@ -1,18 +1,15 @@
 package com.aiden.customteleportplugin.listeners;
 
-import com.aiden.customteleportplugin.managers.TeleportFreezeManager;
+import com.aiden.customteleportplugin.managers.TeleportManager;
 import com.aiden.customteleportplugin.util.CommandState;
 import com.aiden.customteleportplugin.managers.BlockLocationManager;
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusive.TpAllCommand;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
 import com.aiden.customteleportplugin.util.Permission;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import java.util.Optional;
 
 public class HandlePlayerJoin implements Listener {
 
@@ -22,7 +19,7 @@ public class HandlePlayerJoin implements Listener {
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
-    private static final TeleportFreezeManager tpFreezeManager = new TeleportFreezeManager();
+    private static final TeleportManager tpFreezeManager = new TeleportManager();
 
     public HandlePlayerJoin() {}
 

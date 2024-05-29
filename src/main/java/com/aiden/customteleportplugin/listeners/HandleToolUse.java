@@ -1,6 +1,7 @@
 package com.aiden.customteleportplugin.listeners;
 
 import com.aiden.customteleportplugin.managers.BlockLocationManager;
+import com.aiden.customteleportplugin.managers.WorldManager;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
 import com.aiden.customteleportplugin.util.Permission;
 import com.aiden.customteleportplugin.util.CustomTpTool;
@@ -26,6 +27,8 @@ public class HandleToolUse implements Listener {
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
+    private static final WorldManager worldManager = new WorldManager();
+
     public HandleToolUse() {}
 
     @EventHandler
@@ -35,6 +38,7 @@ public class HandleToolUse implements Listener {
         if(!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
         if (!event.getHand().equals(EquipmentSlot.HAND)) return;
         if (player.hasPermission(ctpAdmin)) {
+            if(badLocation(player, event.getClickedBlock().getLocation())) return;
             handleRightClickedBlock(player, event.getClickedBlock());
         } else {
             chatMessenger.sendChat(player, "&cYou shouldn't have this tool!");
@@ -52,6 +56,7 @@ public class HandleToolUse implements Listener {
             player.getInventory().setItemInMainHand(null);
             return;
         }
+        if(badLocation(player, event.getBlock().getLocation())) return;
         handleLeftClickedBlock(player, event.getBlock());
     }
 
@@ -86,6 +91,14 @@ public class HandleToolUse implements Listener {
                     "&cBlock &e%s &cwas never added! &f(%d,%d,%d)", blockMaterial, x, y, z
             ));
         }
+    }
+
+    private boolean badLocation(Player interactingPlayer, Location location) {
+        if(worldManager.isCorrectWorld(location.getWorld())) return false;
+        String worldName = worldManager.getWorldName();
+        chatMessenger.sendChat(interactingPlayer,
+                "&cBlock locations can only be set/removed in world " + worldName);
+        return true;
     }
 
 }

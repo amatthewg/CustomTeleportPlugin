@@ -17,6 +17,8 @@ public class WarnCommand extends ConfirmableSubcommand {
 
     private static JavaPlugin plugin;
 
+    private boolean commandIsConfirmed = false;
+
     public WarnCommand(JavaPlugin pl) { plugin = pl; }
 
     @Override
@@ -47,5 +49,11 @@ public class WarnCommand extends ConfirmableSubcommand {
     public String getConfirmationMessage() {
         return "WARNING: You are about to send a title warning message to all players!";
     }
+
+    @Override
+    public boolean isConfirmed() { return this.commandIsConfirmed; }
+
+    @Override
+    public void setIsConfirmed(boolean state) { this.commandIsConfirmed = state; }
 
 }

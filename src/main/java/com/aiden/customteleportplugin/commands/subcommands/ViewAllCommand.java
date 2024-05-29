@@ -22,28 +22,37 @@ public class ViewAllCommand extends Subcommand {
     private static boolean shouldRevertBlocks = false;
 
     @Override
-    public String getName() { return "viewall"; }
+    public String getName() {
+        return "viewall";
+    }
 
     @Override
-    public String getDescription() { return "View all of the set blocks"; }
+    public String getDescription() {
+        return "View all of the set blocks";
+    }
 
     @Override
-    public String getSyntax() { return "/ctp viewall"; }
+    public String getSyntax() {
+        return "/ctp viewall";
+    }
 
     @Override
     public void perform(Player sender, String[] args) {
-        if(!shouldRevertBlocks) {
+        if (!shouldRevertBlocks) {
             shouldRevertBlocks = true;
             Set<Location> blockLocations = locationManager.getAllBlockLocations();
             blockLocations.forEach(loc -> {
+
+
                 Block block = loc.getBlock();
                 originalBlocksMap.put(loc, block.getType());
                 block.setType(Material.RED_WOOL);
+
+
             });
             chatMessenger.sendChat(sender, String.format("&aSuccessfully changed &e%d &ablocks to Red Wool",
                     blockLocations.size()));
-        }
-        else {
+        } else {
             shouldRevertBlocks = false;
             originalBlocksMap.forEach((key, val) -> key.getBlock().setType(val));
             chatMessenger.sendChat(sender, String.format("&aSuccessfully reverted &e%d &ablocks to original state",

@@ -7,16 +7,17 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-public class TeleportFreezeManager {
+public class TeleportManager {
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
     private static final BlockLocationManager locationManager = new BlockLocationManager();
 
     private static final String shouldBeTeleportedPermission = Permission.SHOULD_BE_TELEPORTED.getString();
+
+    private static final Set<UUID> teleportedPlayers = new HashSet<>();
 
     private static Boolean playersShouldBeMessagedOnTeleport = null;
 
@@ -26,14 +27,26 @@ public class TeleportFreezeManager {
 
     private static List<String> onReturnMessages = null;
 
-    public TeleportFreezeManager(JavaPlugin pl) {
+    private static boolean playersAreTeleported = false;
+
+    public static void addTeleportedPlayer(Player player) { teleportedPlayers.add(player.getUniqueId()); }
+
+    public static void removeTeleportedPlayer(Player player) { teleportedPlayers.remove(player.getUniqueId()); }
+
+    public static boolean playerIsTeleported(Player player) { return teleportedPlayers.contains(player.getUniqueId()); }
+
+    public static boolean playersAreTeleported() { return playersAreTeleported; }
+
+    private static void setPlayersAreTeleported(boolean state) { playersAreTeleported = state; }
+
+    public TeleportManager(JavaPlugin pl) {
         playersShouldBeMessagedOnTeleport = pl.getConfig().getBoolean("message-players-on-tp");
         playersShouldBeMessagedOnReturn = pl.getConfig().getBoolean("message-players-on-return");
         onTpMessages = pl.getConfig().getStringList("on-tp-messages");
         onReturnMessages = pl.getConfig().getStringList("on-return-messages");
     }
 
-    public TeleportFreezeManager() {}
+    public TeleportManager() {}
 
     public Optional<Integer> tpAllPlayers() {
         int teleportedCount = 0;
@@ -53,10 +66,8 @@ public class TeleportFreezeManager {
     public boolean tryTpPlayer(Player player) {
         Optional<Location> destinationOptional = locationManager.getNextAvailableLocation(player);
         if(destinationOptional.isPresent()) {
+            addTeleportedPlayer(player);
             player.teleportAsync(destinationOptional.get().add(0, 1, 0)).thenAccept(success -> {
-                player.setWalkSpeed(0);
-                player.setFlySpeed(0);
-                player.setJumping(false);
                 if(playersShouldBeMessagedOnTeleport) {
                     chatMessenger.sendChat(player, onTpMessages);
                 }
@@ -67,7 +78,7 @@ public class TeleportFreezeManager {
         return false;
     }
 
-    public int returnAllPlayers(Player commandSender) {
+    public int returnAllPlayers() {
         int returnedCount = 0;
         for(Player p : Bukkit.getOnlinePlayers()) {
             if(!p.hasPermission(shouldBeTeleportedPermission)) continue;
@@ -80,10 +91,8 @@ public class TeleportFreezeManager {
     public boolean tryReturnPlayer(Player player) {
         Optional<Location> returnLocationOptional = locationManager.getReturnLocation(player);
         if(returnLocationOptional.isPresent()) {
+            removeTeleportedPlayer(player);
             player.teleportAsync(returnLocationOptional.get()).thenAccept(success -> {
-                player.setWalkSpeed(1);
-                player.setFlySpeed(1);
-                player.setJumping(true);
                 if(playersShouldBeMessagedOnReturn) {
                     chatMessenger.sendChat(player, onReturnMessages);
                 }

@@ -14,14 +14,14 @@ world-name: 'world'
 
 #####################################################################################################################
 ## When the commands "/ctp tpall", "/ctp return", "/ctp warn", or "/ctp reload" are executed,                      ##
-## should all CTP admins be advised about who executed the command?                                                 ##
+## should all CTP admins be advised about who executed the command?                                                ##
 #####################################################################################################################
 warn-admins-on-execute: false
 
 
 #####################################################################################################################
 ## When all players are teleported or returned, should all CTP admins be advised of the success or failure         ##
-## of the teleportation/returning?                                                                                 ##
+## of the teleportation/returning? Setting this value to false will still cause the command executor to be warned  ##
 ##                                                                                                                 ##
 ## Note: if a player joins the server while tpall is active, and there isn't a block location available for them,  ##
 ## all CTP admins will be warned accordingly.                                                                      ##
@@ -81,3 +81,12 @@ on-return-messages:
   - '&aChurch is over and you have been returned to your original location'
 # - 'You can specify multiple message lines to be sent if you want'
 
+
+#####################################################################################################################
+## (not required) Set the coordinates of the location that all teleported players should look at when              ##
+## they are teleported. This will force players to look directly at the center of the specified                    ##
+## location. Enter the location as a comma-separated string with no spaces, like: "55,70,125" (no decimals).       ##
+## This location will be found in the world specified in 'world-name'                                              ##
+## Note: leaving an empty string in this value will cause players to look in the direction they were pre-teleport  ##
+#####################################################################################################################
+center-viewing-block: ""

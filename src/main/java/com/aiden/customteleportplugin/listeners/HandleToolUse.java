@@ -1,6 +1,6 @@
 package com.aiden.customteleportplugin.listeners;
 
-import com.aiden.customteleportplugin.managers.BlockLocationManager;
+import com.aiden.customteleportplugin.managers.aManager;
 import com.aiden.customteleportplugin.managers.WorldManager;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
 import com.aiden.customteleportplugin.util.Permission;
@@ -23,7 +23,7 @@ public class HandleToolUse implements Listener {
 
     private static final String ctpAdmin = Permission.CTP_ADMIN.getString();
 
-    private static final BlockLocationManager locationManager = new BlockLocationManager();
+    private static final aManager BLOCK_LOCATION_MANAGER = new aManager();
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
@@ -65,7 +65,7 @@ public class HandleToolUse implements Listener {
         int x = clickedBlock.getX();
         int y = clickedBlock.getY();
         int z = clickedBlock.getZ();
-        if(locationManager.addAvailableBlockLocation(clickedBlock.getLocation())) {
+        if(BLOCK_LOCATION_MANAGER.addAvailableBlockLocation(clickedBlock.getLocation())) {
             chatMessenger.sendChat(interactingPlayer, String.format("&aAdded block &e%s &f(%d,%d,%d)", blockMaterial, x, y, z));
         }
         else {
@@ -81,7 +81,7 @@ public class HandleToolUse implements Listener {
         int x = clickedBlock.getX();
         int y = clickedBlock.getY();
         int z = clickedBlock.getZ();
-        if(locationManager.removeAvailableBlockLocation(blockLocation)) {
+        if(BLOCK_LOCATION_MANAGER.removeAvailableBlockLocation(blockLocation)) {
             chatMessenger.sendChat(interactingPlayer, String.format(
                     "&aBlock &e%s &awas removed! &f(%d,%d,%d)", blockMaterial, x, y, z
             ));

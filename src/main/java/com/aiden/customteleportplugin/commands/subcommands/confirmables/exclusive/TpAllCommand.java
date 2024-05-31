@@ -18,11 +18,11 @@ public class TpAllCommand extends ExclusiveCommand {
     private static final String notEnoughBlocksMsg = "&cWARNING: Could not teleport all players because there\n" +
             "weren't enough set block locations!";
 
-    private static CommandState commandState = CommandState.NOT_CURRENTLY_EXECUTED;
-
     private static boolean shouldWarnAdminsOnTeleportResult;
 
     private static JavaPlugin plugin;
+
+    private static boolean isCurrentlyExecuted = false;
 
     private boolean commandIsConfirmed = false;
 
@@ -62,8 +62,8 @@ public class TpAllCommand extends ExclusiveCommand {
             }
             chatMessenger.sendChat(sender, notEnoughBlocksMsg);
         }
-        setCommandState(CommandState.CURRENTLY_EXECUTED);
-        new ReturnCommand(plugin).setCommandState(CommandState.NOT_CURRENTLY_EXECUTED);
+        isCurrentlyExecuted = true;
+        ReturnCommand.setIsCurrentlyExecuted(false);
 
         // Register movement listener after teleport is complete to avoid issues with cancelling teleport movement
         plugin.getServer().getPluginManager().registerEvents(new HandlePlayerMove(), plugin);
@@ -79,12 +79,11 @@ public class TpAllCommand extends ExclusiveCommand {
     public void setIsConfirmed(boolean state) { this.commandIsConfirmed = state; }
 
     @Override
-    public CommandState getCommandState() { return commandState; }
+    public boolean isCurrentlyExecuted() { return isCurrentlyExecuted; }
 
     @Override
-    public void setCommandState(CommandState state) { commandState = state; }
+    public String getNotReadyMessage() { return "you must first execute command &e/ctp return"; }
 
-    @Override
-    public String getNotReadyMessage() { return "the tpall command is currently executed!"; }
+    public static void setIsCurrentlyExecuted(boolean state) { isCurrentlyExecuted = state; }
 
 }

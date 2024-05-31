@@ -1,5 +1,6 @@
 package com.aiden.customteleportplugin.listeners;
 
+import com.aiden.customteleportplugin.managers.TeleportManager;
 import com.aiden.customteleportplugin.util.CommandState;
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusive.TpAllCommand;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
@@ -24,15 +25,14 @@ public class HandlePlayerCommand implements Listener {
     private static String commandNotAllowedMessage = null;
 
     public HandlePlayerCommand(JavaPlugin pl) {
-        pl.getConfig().getStringList("allowed-commands").forEach(cmd -> allowedCommands.add("/" + cmd.toLowerCase()));
+        pl.getConfig().getStringList("enabled-commands").forEach(cmd -> allowedCommands.add("/" + cmd.toLowerCase()));
         commandNotAllowedMessage = pl.getConfig().getString("command-not-allowed-message");
     }
 
     @EventHandler
     public void onPlayerCommandPreProcess(PlayerCommandPreprocessEvent event) {
-        if(new TpAllCommand().getCommandState().equals(CommandState.NOT_CURRENTLY_EXECUTED)) return;
         Player player = event.getPlayer();
-        if(!player.hasPermission(shouldBeTeleportedPermission)) return;
+        if(!TeleportManager.playerIsTeleported(player)) return;
         String command = event.getMessage().split(" ")[0].toLowerCase();
         if(allowedCommands.contains(command)) return;
         event.setCancelled(true);

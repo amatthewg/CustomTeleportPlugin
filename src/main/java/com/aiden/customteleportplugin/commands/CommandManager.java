@@ -21,6 +21,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.text.View;
+import javax.tools.Tool;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,17 +47,13 @@ public class CommandManager implements CommandExecutor {
     public CommandManager(JavaPlugin pl) {
         noPermissionMsg = pl.getConfig().getString("no-permission-message");
         adminsShouldBeWarnedOnCommandExecute = pl.getConfig().getBoolean("warn-admins-on-execute");
-        subcommands.add(new ToolCommand());
         subcommands.add(new ViewAllCommand());
-        TpAllCommand tpAllCommand = new TpAllCommand(pl);
-        subcommands.add(tpAllCommand);
-        ReturnCommand returnCommand = new ReturnCommand(pl);
-        subcommands.add(returnCommand);
+        subcommands.add(new ToolCommand());
         subcommands.add(new CancelCommand());
-        WarnCommand warnCommand = new WarnCommand(pl);
-        subcommands.add(warnCommand);
-        ReloadCommand reloadCommand = new ReloadCommand(pl);
-        subcommands.add(reloadCommand);
+        subcommands.add(new WarnCommand(pl));
+        subcommands.add(new ReloadCommand(pl));
+        subcommands.add(new TpAllCommand(pl));
+        subcommands.add(new ReturnCommand());
     }
 
     @Override
@@ -77,8 +75,7 @@ public class CommandManager implements CommandExecutor {
             if (strings[0].equalsIgnoreCase(subcommand.getName())) {
                 if (subcommand instanceof ExclusiveCommand) {
                     ExclusiveCommand exclusiveCommand = (ExclusiveCommand) subcommand;
-                    CommandState commandState = exclusiveCommand.getCommandState();
-                    if (commandState.equals(CommandState.CURRENTLY_EXECUTED)) {
+                    if(exclusiveCommand.isCurrentlyExecuted()) {
                         chatMessenger.sendChat(sender, String.format(
                                 "&cCannot execute command &a%s &cbecause %s", exclusiveCommand.getSyntax(),
                                 exclusiveCommand.getNotReadyMessage()

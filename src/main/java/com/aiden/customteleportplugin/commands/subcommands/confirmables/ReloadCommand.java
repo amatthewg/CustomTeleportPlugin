@@ -6,9 +6,8 @@ import com.aiden.customteleportplugin.listeners.HandlePlayerCommand;
 import com.aiden.customteleportplugin.listeners.HandlePlayerDisconnect;
 import com.aiden.customteleportplugin.listeners.HandlePlayerJoin;
 import com.aiden.customteleportplugin.listeners.HandleToolUse;
-import com.aiden.customteleportplugin.managers.BlockLocationManager;
+import com.aiden.customteleportplugin.managers.aManager;
 import com.aiden.customteleportplugin.managers.TeleportManager;
-import com.aiden.customteleportplugin.util.CommandState;
 import com.aiden.customteleportplugin.managers.FileManager;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
 import org.bukkit.Location;
@@ -22,7 +21,7 @@ public class ReloadCommand extends ConfirmableSubcommand {
 
     private static final FileManager fileManager = new FileManager();
 
-    private static final BlockLocationManager locationManager = new BlockLocationManager();
+    private static final aManager BLOCK_LOCATION_MANAGER = new aManager();
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
@@ -43,12 +42,11 @@ public class ReloadCommand extends ConfirmableSubcommand {
 
     @Override
     public void perform(Player sender, String[] args) {
-        CommandState tpAllCommandState = new TpAllCommand().getCommandState();
-        if(tpAllCommandState.equals(CommandState.CURRENTLY_EXECUTED)) {
+        if(new TpAllCommand().isCurrentlyExecuted()) {
             chatMessenger.sendChat(sender, "&cCannot reload until &e/ctp return &cis executed!");
             return;
         }
-        Set<Location> allBlockLocations = locationManager.getAllBlockLocations();
+        Set<Location> allBlockLocations = BLOCK_LOCATION_MANAGER.getAllBlockLocations();
         if(!fileManager.saveSetToFile(allBlockLocations)) {
             chatMessenger.sendChat(sender, "&cAn unknown error occurred when trying to save the set\n" +
                     "block locations. Please check the console for details.");

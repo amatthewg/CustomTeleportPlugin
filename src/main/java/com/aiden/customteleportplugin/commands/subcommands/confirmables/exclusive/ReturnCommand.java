@@ -3,24 +3,20 @@ package com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusi
 import com.aiden.customteleportplugin.listeners.HandlePlayerMove;
 import com.aiden.customteleportplugin.managers.TeleportManager;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
-import com.aiden.customteleportplugin.util.CommandState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class ReturnCommand extends ExclusiveCommand {
 
-    private static final TeleportManager tpFreezeManager = new TeleportManager();
+    private static final TeleportManager tpManager = new TeleportManager();
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
-    private static CommandState commandState = CommandState.CURRENTLY_EXECUTED;
-
-    private static JavaPlugin plugin;
+    private static boolean isCurrentlyExecuted = true;
 
     private boolean commandIsConfirmed = false;
 
-    public ReturnCommand(JavaPlugin pl) { plugin = pl; }
+    public ReturnCommand() {}
 
     @Override
     public String getName() { return "return"; }
@@ -35,10 +31,10 @@ public class ReturnCommand extends ExclusiveCommand {
     public void perform(Player sender, String[] args) {
         // Unregister movement listener before returning, to avoid issues with cancelling teleport movement
         HandlerList.unregisterAll(new HandlePlayerMove());
-        int returnedCount = tpFreezeManager.returnAllPlayers();
+        int returnedCount = tpManager.returnAllPlayers();
         chatMessenger.sendChat(sender, String.format("&aSuccessfully returned &e%d &aplayers", returnedCount));
-        setCommandState(CommandState.CURRENTLY_EXECUTED);
-        new TpAllCommand().setCommandState(CommandState.NOT_CURRENTLY_EXECUTED);
+        isCurrentlyExecuted = true;
+        TpAllCommand.setIsCurrentlyExecuted(false);
     }
 
     @Override
@@ -53,12 +49,11 @@ public class ReturnCommand extends ExclusiveCommand {
     public void setIsConfirmed(boolean state) { this.commandIsConfirmed = state; }
 
     @Override
-    public CommandState getCommandState() { return commandState; }
-
-    @Override
-    public void setCommandState(CommandState state) { commandState = state; }
+    public boolean isCurrentlyExecuted() { return isCurrentlyExecuted; }
 
     @Override
     public String getNotReadyMessage() { return "the tpall command has not been executed!"; }
+
+    public static void setIsCurrentlyExecuted(boolean state) { isCurrentlyExecuted = state; }
 
 }

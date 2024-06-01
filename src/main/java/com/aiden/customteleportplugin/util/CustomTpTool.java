@@ -1,5 +1,7 @@
 package com.aiden.customteleportplugin.util;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -13,14 +15,14 @@ public class CustomTpTool {
     public static ItemStack getItemStack() {
         ItemStack customTool = new ItemStack(Material.STICK, 1);
         ItemMeta itemMeta = customTool.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&eCustom TP Tool"));
-        List<String> loreStrings = new ArrayList<>();
-        loreStrings.add(ChatColor.translateAlternateColorCodes('&', "&a&lCustomTeleport"));
-        loreStrings.add("Right-click on a block with this tool to ");
-        loreStrings.add("set the blocks for players to teleport to.");
-        loreStrings.add("Left-click on a block to remove it from the");
-        loreStrings.add("teleport list.");
-        itemMeta.setLore(loreStrings);
+        itemMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&eCustom TP Tool"));
+        List<Component> loreStrings = new ArrayList<>();
+        loreStrings.add(LegacyComponentSerializer.legacyAmpersand().deserialize("&a&lCustomTeleport"));
+        loreStrings.add(Component.text("Right-click on a block with this tool to "));
+        loreStrings.add(Component.text("set the blocks for players to teleport to."));
+        loreStrings.add(Component.text("Left-click on a block to remove it from the"));
+        loreStrings.add(Component.text("teleport list."));
+        itemMeta.lore(loreStrings);
         customTool.setItemMeta(itemMeta);
         return customTool;
     }

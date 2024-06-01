@@ -1,6 +1,7 @@
 package com.aiden.customteleportplugin.messengers;
 
 import com.aiden.customteleportplugin.util.Permission;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ public class PlayerChatMessenger {
     }
 
     public void sendChat(Player target, String message) {
-        target.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+        target.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
     }
 
     public void sendChat(Player target, List<String> messages) {

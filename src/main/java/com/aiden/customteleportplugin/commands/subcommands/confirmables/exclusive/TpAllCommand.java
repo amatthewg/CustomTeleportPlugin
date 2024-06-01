@@ -2,7 +2,6 @@ package com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusi
 
 import com.aiden.customteleportplugin.listeners.HandlePlayerMove;
 import com.aiden.customteleportplugin.managers.TeleportManager;
-import com.aiden.customteleportplugin.util.CommandState;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,7 +12,7 @@ public class TpAllCommand extends ExclusiveCommand {
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
-    private static final TeleportManager tpFreezeManager = new TeleportManager();
+    private static final TeleportManager tpManager = new TeleportManager();
 
     private static final String notEnoughBlocksMsg = "&cWARNING: Could not teleport all players because there\n" +
             "weren't enough set block locations!";
@@ -22,7 +21,7 @@ public class TpAllCommand extends ExclusiveCommand {
 
     private static JavaPlugin plugin;
 
-    private static boolean isCurrentlyExecuted = false;
+    private static boolean canBeExecuted = true;
 
     private boolean commandIsConfirmed = false;
 
@@ -44,7 +43,7 @@ public class TpAllCommand extends ExclusiveCommand {
 
     @Override
     public void perform(Player sender, String[] args) {
-        Optional<Integer> teleportedPlayerCount = tpFreezeManager.tpAllPlayers();
+        Optional<Integer> teleportedPlayerCount = tpManager.tpAllPlayers();
         if(teleportedPlayerCount.isPresent()) {
             if(shouldWarnAdminsOnTeleportResult) {
                 chatMessenger.messageAdmins(String.format(
@@ -62,9 +61,9 @@ public class TpAllCommand extends ExclusiveCommand {
             }
             chatMessenger.sendChat(sender, notEnoughBlocksMsg);
         }
-        isCurrentlyExecuted = true;
-        ReturnCommand.setIsCurrentlyExecuted(false);
-
+        canBeExecuted = false;
+        ReturnCommand.setCanBeExecuted(true);
+        //ReloadCommand.setCanBeExecuted(false);
         // Register movement listener after teleport is complete to avoid issues with cancelling teleport movement
         plugin.getServer().getPluginManager().registerEvents(new HandlePlayerMove(), plugin);
     }
@@ -79,11 +78,11 @@ public class TpAllCommand extends ExclusiveCommand {
     public void setIsConfirmed(boolean state) { this.commandIsConfirmed = state; }
 
     @Override
-    public boolean isCurrentlyExecuted() { return isCurrentlyExecuted; }
+    public boolean canBeExecuted() { return canBeExecuted; }
 
     @Override
-    public String getNotReadyMessage() { return "you must first execute command &e/ctp return"; }
+    public String getCannotBeExecutedMessage() { return "you must first execute command &e/ctp return"; }
 
-    public static void setIsCurrentlyExecuted(boolean state) { isCurrentlyExecuted = state; }
+    public static void setCanBeExecuted(boolean state) { canBeExecuted = state; }
 
 }

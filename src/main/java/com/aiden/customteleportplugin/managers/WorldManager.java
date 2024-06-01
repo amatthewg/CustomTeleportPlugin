@@ -19,5 +19,4 @@ public class WorldManager {
 
     public String getWorldName() { return world.getName(); }
 
-    public static World getWorld() { return world; }
 }

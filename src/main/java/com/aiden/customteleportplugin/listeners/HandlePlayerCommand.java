@@ -1,10 +1,7 @@
 package com.aiden.customteleportplugin.listeners;
 
 import com.aiden.customteleportplugin.managers.TeleportManager;
-import com.aiden.customteleportplugin.util.CommandState;
-import com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusive.TpAllCommand;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
-import com.aiden.customteleportplugin.util.Permission;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,8 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class HandlePlayerCommand implements Listener {
-
-    private static final String shouldBeTeleportedPermission = Permission.SHOULD_BE_TELEPORTED.getString();
 
     private static final Set<String> allowedCommands = new HashSet<>();
 
@@ -32,7 +27,8 @@ public class HandlePlayerCommand implements Listener {
     @EventHandler
     public void onPlayerCommandPreProcess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        if(!TeleportManager.playerIsTeleported(player)) return;
+        boolean playerIsTeleported = TeleportManager.playerIsTeleported(player);
+        if(!playerIsTeleported) return;
         String command = event.getMessage().split(" ")[0].toLowerCase();
         if(allowedCommands.contains(command)) return;
         event.setCancelled(true);

@@ -12,7 +12,7 @@ public class ReturnCommand extends ExclusiveCommand {
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
-    private static boolean isCurrentlyExecuted = true;
+    private static boolean canBeExecuted = false;
 
     private boolean commandIsConfirmed = false;
 
@@ -33,8 +33,9 @@ public class ReturnCommand extends ExclusiveCommand {
         HandlerList.unregisterAll(new HandlePlayerMove());
         int returnedCount = tpManager.returnAllPlayers();
         chatMessenger.sendChat(sender, String.format("&aSuccessfully returned &e%d &aplayers", returnedCount));
-        isCurrentlyExecuted = true;
-        TpAllCommand.setIsCurrentlyExecuted(false);
+        canBeExecuted = true;
+        TpAllCommand.setCanBeExecuted(true);
+        //ReloadCommand.setCanBeExecuted(true);
     }
 
     @Override
@@ -49,11 +50,11 @@ public class ReturnCommand extends ExclusiveCommand {
     public void setIsConfirmed(boolean state) { this.commandIsConfirmed = state; }
 
     @Override
-    public boolean isCurrentlyExecuted() { return isCurrentlyExecuted; }
+    public boolean canBeExecuted() { return canBeExecuted; }
 
     @Override
-    public String getNotReadyMessage() { return "the tpall command has not been executed!"; }
+    public String getCannotBeExecutedMessage() { return "the tpall command has not been executed!"; }
 
-    public static void setIsCurrentlyExecuted(boolean state) { isCurrentlyExecuted = state; }
+    public static void setCanBeExecuted(boolean state) { canBeExecuted = state; }
 
 }

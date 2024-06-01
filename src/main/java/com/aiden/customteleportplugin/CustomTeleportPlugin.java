@@ -6,7 +6,7 @@ import com.aiden.customteleportplugin.listeners.HandlePlayerDisconnect;
 import com.aiden.customteleportplugin.listeners.HandlePlayerJoin;
 import com.aiden.customteleportplugin.listeners.HandleToolUse;
 import com.aiden.customteleportplugin.managers.FileManager;
-import com.aiden.customteleportplugin.managers.aManager;
+import com.aiden.customteleportplugin.managers.BlockLocationManager;
 import com.aiden.customteleportplugin.managers.TeleportManager;
 import com.aiden.customteleportplugin.managers.WorldManager;
 import org.bukkit.Bukkit;
@@ -26,8 +26,6 @@ import java.util.logging.Level;
 public final class CustomTeleportPlugin extends JavaPlugin {
 
     private static boolean errorOnStartup = false;
-
-    private static aManager tManager = null;
 
     private static JavaPlugin plugin;
 
@@ -76,10 +74,9 @@ public final class CustomTeleportPlugin extends JavaPlugin {
         if(errorOnStartup) return;
         TeleportManager tpManager = new TeleportManager();
         tpManager.returnAllPlayers();
-        tManager = new aManager();
-        tManager.refresh();
+        BlockLocationManager blockLocationManager = new BlockLocationManager();
         FileManager fileManager = new FileManager();
-        Set<Location> allBlockLocations = tManager.getAllBlockLocations();
+        Set<Location> allBlockLocations = blockLocationManager.getAllBlockLocations();
         fileManager.saveSetToFile(allBlockLocations);
     }
 
@@ -94,6 +91,7 @@ public final class CustomTeleportPlugin extends JavaPlugin {
         if(world == null) {
             getLogger().log(Level.SEVERE, String.format(
                     "FATAL: Could not locate world '%s' specified in the config.yml", worldName));
+            throw new RuntimeException();
         }
         WorldManager worldManager = new WorldManager(world);
     }
@@ -123,7 +121,7 @@ public final class CustomTeleportPlugin extends JavaPlugin {
         }
         boolean saveFileWasCreated = saveFileWasCreatedOptional.get();
         if(saveFileWasCreated) {
-            aManager tManager = new aManager(new HashSet<>());
+            BlockLocationManager blockLocationManager = new BlockLocationManager(new HashSet<>());
         }
         else {
             handleSetLoadedFromFile();
@@ -145,7 +143,7 @@ public final class CustomTeleportPlugin extends JavaPlugin {
                     "Tried to load saved block locations that are not inside the world specified in the config.yml: 'world-name'");
             throw new RuntimeException();
         }
-        aManager tManager = new aManager(loadedLocations);
+        BlockLocationManager blockLocationManager = new BlockLocationManager(loadedLocations);
     }
 
     public static void deactivatePlugin() {

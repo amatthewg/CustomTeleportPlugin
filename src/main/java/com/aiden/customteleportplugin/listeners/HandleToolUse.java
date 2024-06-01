@@ -1,6 +1,6 @@
 package com.aiden.customteleportplugin.listeners;
 
-import com.aiden.customteleportplugin.managers.aManager;
+import com.aiden.customteleportplugin.managers.BlockLocationManager;
 import com.aiden.customteleportplugin.managers.WorldManager;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
 import com.aiden.customteleportplugin.util.Permission;
@@ -23,7 +23,7 @@ public class HandleToolUse implements Listener {
 
     private static final String ctpAdmin = Permission.CTP_ADMIN.getString();
 
-    private static final aManager BLOCK_LOCATION_MANAGER = new aManager();
+    private static final BlockLocationManager blockLocationManager = new BlockLocationManager();
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
@@ -33,9 +33,9 @@ public class HandleToolUse implements Listener {
 
     @EventHandler
     public void onToolRightClick(PlayerInteractEvent event) {
+        if(!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
         Player player = event.getPlayer();
         if (!player.getInventory().getItemInMainHand().equals(customTpTool)) return;
-        if(!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
         if (!event.getHand().equals(EquipmentSlot.HAND)) return;
         if (player.hasPermission(ctpAdmin)) {
             if(badLocation(player, event.getClickedBlock().getLocation())) return;
@@ -65,7 +65,7 @@ public class HandleToolUse implements Listener {
         int x = clickedBlock.getX();
         int y = clickedBlock.getY();
         int z = clickedBlock.getZ();
-        if(BLOCK_LOCATION_MANAGER.addAvailableBlockLocation(clickedBlock.getLocation())) {
+        if(blockLocationManager.addAvailableBlockLocation(clickedBlock.getLocation())) {
             chatMessenger.sendChat(interactingPlayer, String.format("&aAdded block &e%s &f(%d,%d,%d)", blockMaterial, x, y, z));
         }
         else {
@@ -81,7 +81,7 @@ public class HandleToolUse implements Listener {
         int x = clickedBlock.getX();
         int y = clickedBlock.getY();
         int z = clickedBlock.getZ();
-        if(BLOCK_LOCATION_MANAGER.removeAvailableBlockLocation(blockLocation)) {
+        if(blockLocationManager.removeAvailableBlockLocation(blockLocation)) {
             chatMessenger.sendChat(interactingPlayer, String.format(
                     "&aBlock &e%s &awas removed! &f(%d,%d,%d)", blockMaterial, x, y, z
             ));
@@ -96,8 +96,8 @@ public class HandleToolUse implements Listener {
     private boolean badLocation(Player interactingPlayer, Location location) {
         if(worldManager.isCorrectWorld(location.getWorld())) return false;
         String worldName = worldManager.getWorldName();
-        chatMessenger.sendChat(interactingPlayer,
-                "&cBlock locations can only be set/removed in world " + worldName);
+        chatMessenger.sendChat(interactingPlayer, String.format(
+                "&cBlock locations can only be set/removed in world '%s'", worldName));
         return true;
     }
 

@@ -6,7 +6,6 @@ import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
 import java.io.*;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -16,9 +15,7 @@ public class FileManager {
 
     private static File saveFile = null;
 
-    public FileManager(JavaPlugin pl) {
-        saveFile = new File(pl.getDataFolder(), "block_locations.ser");
-    }
+    public FileManager(JavaPlugin pl) { saveFile = new File(pl.getDataFolder(), "block_locations.ser"); }
 
     public FileManager() {}
 
@@ -58,45 +55,5 @@ public class FileManager {
             return Optional.empty();
         }
     }
-    /*
-    public Optional<Set<Location>> loadSetFromFile() {
-        try {
-            FileInputStream fileIn = new FileInputStream(saveFile);
-            BukkitObjectInputStream in = new BukkitObjectInputStream(fileIn);
-            Object obj = in.readObject();
-            in.close();
-            fileIn.close();
-            System.out.println("Reached point 1");
-            if(obj instanceof Set<?>) {
-                System.out.println("Reached point 2");
-                Set<?> tempSet = (Set<?>) obj;
-                Set<Location> resultSet = new HashSet<>();
-                System.out.println("Reached point 3");
-                boolean validSet = tempSet.stream().allMatch(element -> {
-                    System.out.println("Reached point 4");
-                    if(element instanceof Location) {
-                        System.out.println("Reached point 5");
-                        resultSet.add((Location) element);
-                        return true;
-                    }
-                    System.out.println("Reached point 6");
-                    return false;
-                });
-                System.out.println("Reached point 7");
-                if(validSet) {
-                    System.out.println("Reached point 8");
-                    return Optional.of(resultSet);
-                }
-            }
-            System.out.println("Reached point 9");
-            throw new ClassNotFoundException();
-        } catch(IOException | ClassNotFoundException e) {
-            System.out.println("Reached point 10");
-            e.printStackTrace();
-            return Optional.empty();
-        }
-    }
-
-     */
 
 }

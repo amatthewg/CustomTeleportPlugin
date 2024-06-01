@@ -82,6 +82,7 @@ on-return-messages:
 # - 'You can specify multiple message lines to be sent if you want'
 
 
+# ***NOT IMPLEMENTED, PLEASE DISREGARD***
 #####################################################################################################################
 ## (not required) Set the coordinates of the location that all teleported players should look at when              ##
 ## they are teleported. This will force players to look directly at the center of the specified                    ##

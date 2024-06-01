@@ -1,6 +1,6 @@
 package com.aiden.customteleportplugin.commands.subcommands;
 
-import com.aiden.customteleportplugin.managers.aManager;
+import com.aiden.customteleportplugin.managers.BlockLocationManager;
 import com.aiden.customteleportplugin.messengers.PlayerChatMessenger;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class ViewAllCommand extends Subcommand {
 
-    private static final aManager BLOCK_LOCATION_MANAGER = new aManager();
+    private static final BlockLocationManager blockLocationManager = new BlockLocationManager();
 
     private static final Map<Location, Material> originalBlocksMap = new HashMap<>();
 
@@ -40,7 +40,7 @@ public class ViewAllCommand extends Subcommand {
     public void perform(Player sender, String[] args) {
         if (!shouldRevertBlocks) {
             shouldRevertBlocks = true;
-            Set<Location> blockLocations = BLOCK_LOCATION_MANAGER.getAllBlockLocations();
+            Set<Location> blockLocations = blockLocationManager.getAllBlockLocations();
             blockLocations.forEach(loc -> {
 
 

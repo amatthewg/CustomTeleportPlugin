@@ -6,8 +6,6 @@ import com.aiden.customteleportplugin.commands.subcommands.ToolCommand;
 import com.aiden.customteleportplugin.commands.subcommands.ViewAllCommand;
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.ConfirmableSubcommand;
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusive.ExclusiveCommand;
-import com.aiden.customteleportplugin.util.CommandState;
-import com.aiden.customteleportplugin.commands.subcommands.confirmables.ReloadCommand;
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.WarnCommand;
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusive.ReturnCommand;
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusive.TpAllCommand;
@@ -21,8 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.text.View;
-import javax.tools.Tool;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,9 +47,9 @@ public class CommandManager implements CommandExecutor {
         subcommands.add(new ToolCommand());
         subcommands.add(new CancelCommand());
         subcommands.add(new WarnCommand(pl));
-        subcommands.add(new ReloadCommand(pl));
         subcommands.add(new TpAllCommand(pl));
         subcommands.add(new ReturnCommand());
+        //subcommands.add(new ReloadCommand(pl));
     }
 
     @Override
@@ -75,10 +71,10 @@ public class CommandManager implements CommandExecutor {
             if (strings[0].equalsIgnoreCase(subcommand.getName())) {
                 if (subcommand instanceof ExclusiveCommand) {
                     ExclusiveCommand exclusiveCommand = (ExclusiveCommand) subcommand;
-                    if(exclusiveCommand.isCurrentlyExecuted()) {
+                    if(!exclusiveCommand.canBeExecuted()) {
                         chatMessenger.sendChat(sender, String.format(
                                 "&cCannot execute command &a%s &cbecause %s", exclusiveCommand.getSyntax(),
-                                exclusiveCommand.getNotReadyMessage()
+                                exclusiveCommand.getCannotBeExecutedMessage()
                         ));
                         return true;
                     }

@@ -4,8 +4,8 @@ import com.aiden.customteleportplugin.commands.subcommands.confirmables.Confirma
 
 public abstract class ExclusiveCommand extends ConfirmableSubcommand {
 
-    public abstract boolean isCurrentlyExecuted();
+    public abstract boolean canBeExecuted();
 
-    public abstract String getNotReadyMessage();
+    public abstract String getCannotBeExecutedMessage();
 
 }

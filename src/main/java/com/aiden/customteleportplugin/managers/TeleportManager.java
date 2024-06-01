@@ -13,10 +13,11 @@ public class TeleportManager {
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
-    private static final aManager BLOCK_LOCATION_MANAGER = new aManager();
+    private static final BlockLocationManager blockLocationManager = new BlockLocationManager();
 
     private static final String shouldBeTeleportedPermission = Permission.SHOULD_BE_TELEPORTED.getString();
 
+    // originalPlayerLocations also doubles as a means to tell if a Player is/was teleported
     private static final Map<UUID, Location> originalPlayerLocations = new HashMap<>();
 
     private static Boolean playersShouldBeMessagedOnTeleport = null;
@@ -45,7 +46,8 @@ public class TeleportManager {
         boolean allTeleported = true;
         for(Player p : Bukkit.getOnlinePlayers()) {
             if(!p.hasPermission(shouldBeTeleportedPermission)) continue;
-            if(!tryTpPlayer(p)) {
+            boolean teleportSuccess = tryTpPlayer(p);
+            if(!teleportSuccess) {
                 allTeleported = false;
                 break;
             }
@@ -56,10 +58,12 @@ public class TeleportManager {
     }
 
     public boolean tryTpPlayer(Player player) {
-        Optional<Location> destinationOptional = BLOCK_LOCATION_MANAGER.getNextAvailableLocation(player);
+        Optional<Location> destinationOptional = blockLocationManager.getNextAvailableLocation(player);
         if(destinationOptional.isPresent()) {
+            Location destination = destinationOptional.get();
+            Location result = new Location(destination.getWorld(), destination.getX()+0.5, destination.getY()+1, destination.getZ()+0.5);
             originalPlayerLocations.put(player.getUniqueId(), player.getLocation());
-            player.teleportAsync(destinationOptional.get().add(0, 1, 0)).thenAccept(success -> {
+            player.teleportAsync(result).thenAccept(success -> {
                 if(playersShouldBeMessagedOnTeleport) {
                     chatMessenger.sendChat(player, onTpMessages);
                 }
@@ -78,12 +82,10 @@ public class TeleportManager {
             if(!p.hasPermission(shouldBeTeleportedPermission)) continue;
             if(tryReturnPlayer(p)) returnedCount++;
         }
-        BLOCK_LOCATION_MANAGER.refresh();
         return returnedCount;
     }
 
     public boolean tryReturnPlayer(Player player) {
-
         Location returnLocation = originalPlayerLocations.remove(player.getUniqueId());
         if(returnLocation != null) {
             player.teleportAsync(returnLocation).thenAccept(success -> {
@@ -92,6 +94,7 @@ public class TeleportManager {
                 }
                 // TODO handle failed teleportation
             });
+            blockLocationManager.handlePlayerReturn(player);
             return true;
         }
         // Null return location signifies that this player was never teleported

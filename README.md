@@ -1,4 +1,4 @@
-# CustomTeleportPlugin (1.0)
+# CustomTeleportPlugin (1.1)
 **Minecraft Java (Paper) Plugin**
 
 ## Overview

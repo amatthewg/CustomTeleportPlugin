@@ -33,6 +33,8 @@ public class FileManager {
             FileOutputStream fileOut = new FileOutputStream(saveFile);
             BukkitObjectOutputStream out = new BukkitObjectOutputStream(fileOut);
             out.writeObject(set);
+            out.flush();
+            fileOut.flush();
             out.close();
             fileOut.close();
             return true;

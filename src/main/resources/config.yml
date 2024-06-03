@@ -74,6 +74,7 @@ command-not-allowed-message: "&c&lHey! &3Sorry, you can't use that command right
 message-players-on-return: true
 
 
+
 #####################################################################################################################
 ## If the above is true, you can set the specific message you want them to be sent                                 ##
 #####################################################################################################################

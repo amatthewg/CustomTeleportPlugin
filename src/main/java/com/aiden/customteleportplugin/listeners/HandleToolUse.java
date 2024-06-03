@@ -29,6 +29,11 @@ public class HandleToolUse implements Listener {
 
     private static final WorldManager worldManager = new WorldManager();
 
+    private static boolean viewingCommandEnabled = false;
+
+    public static void setViewingCommandEnabled(boolean state) { viewingCommandEnabled = state; }
+
+
     public HandleToolUse() {}
 
     @EventHandler

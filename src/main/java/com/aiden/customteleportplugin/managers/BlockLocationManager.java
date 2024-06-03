@@ -1,14 +1,42 @@
 package com.aiden.customteleportplugin.managers;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BlockLocationManager {
 
     private static final Set<Location> availableBlockLocations = new HashSet<>();
 
     private static final Map<UUID, Location> occupiedBlockLocations = new HashMap<>();
+
+    private static final Map<Location, Material> originalBlocksMap = new HashMap<>();
+
+    private static boolean blockViewingEnabled = false;
+
+    public static int setBlockViewingEnabled(boolean state) {
+        blockViewingEnabled = state;
+        AtomicInteger blockCount = new AtomicInteger(0);
+        if(blockViewingEnabled) {
+            getAllBlockLocations().forEach(location -> {
+                Block block = location.getBlock();
+                originalBlocksMap.put(location, block.getType());
+                block.setType(Material.RED_WOOL);
+                blockCount.getAndIncrement();
+            });
+        }
+        else {
+            originalBlocksMap.forEach((key, val) -> {
+                key.getBlock().setType(val);
+                blockCount.incrementAndGet();
+            });
+            originalBlocksMap.clear();
+        }
+        return blockCount.get();
+    }
 
     public BlockLocationManager(Set<Location> blockLocations) { availableBlockLocations.addAll(blockLocations); }
 
@@ -24,15 +52,29 @@ public class BlockLocationManager {
     }
 
     public void handlePlayerReturn(Player player) {
-        System.out.printf("**Called handlePlayerReturn** Result: ");
         availableBlockLocations.add(occupiedBlockLocations.remove(player.getUniqueId()));
     }
 
-    public boolean addAvailableBlockLocation(Location location) { return availableBlockLocations.add(location); }
+    public boolean addAvailableBlockLocation(Location location) {
+        boolean success = availableBlockLocations.add(location);
+        if(success && blockViewingEnabled) {
+            Block block = location.getBlock();
+            originalBlocksMap.put(location, block.getType());
+            block.setType(Material.RED_WOOL);
+        }
+        return success;
+    }
 
-    public boolean removeAvailableBlockLocation(Location location) { return availableBlockLocations.remove(location); }
+    public boolean removeAvailableBlockLocation(Location location) {
+        boolean success = availableBlockLocations.remove(location);
+        if(success && blockViewingEnabled) {
+            Block block = location.getBlock();
+            block.setType(originalBlocksMap.remove(location));
+        }
+        return success;
+    }
 
-    public Set<Location> getAllBlockLocations() {
+    public static Set<Location> getAllBlockLocations() {
         Set<Location> result = new HashSet<>(availableBlockLocations);
         result.addAll(occupiedBlockLocations.values());
         return result;

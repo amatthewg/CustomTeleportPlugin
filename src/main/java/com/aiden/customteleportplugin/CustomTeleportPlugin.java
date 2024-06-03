@@ -76,7 +76,8 @@ public final class CustomTeleportPlugin extends JavaPlugin {
         tpManager.returnAllPlayers();
         BlockLocationManager blockLocationManager = new BlockLocationManager();
         FileManager fileManager = new FileManager();
-        Set<Location> allBlockLocations = blockLocationManager.getAllBlockLocations();
+        BlockLocationManager.setBlockViewingEnabled(false);
+        Set<Location> allBlockLocations = BlockLocationManager.getAllBlockLocations();
         fileManager.saveSetToFile(allBlockLocations);
     }
 

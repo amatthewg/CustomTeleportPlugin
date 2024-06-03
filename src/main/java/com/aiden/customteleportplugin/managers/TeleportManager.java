@@ -60,10 +60,11 @@ public class TeleportManager {
     public boolean tryTpPlayer(Player player) {
         Optional<Location> destinationOptional = blockLocationManager.getNextAvailableLocation(player);
         if(destinationOptional.isPresent()) {
-            Location destination = destinationOptional.get();
-            Location result = new Location(destination.getWorld(), destination.getX()+0.5, destination.getY()+1, destination.getZ()+0.5);
-            originalPlayerLocations.put(player.getUniqueId(), player.getLocation());
-            player.teleportAsync(result).thenAccept(success -> {
+            Location originalLocation = player.getLocation();
+            Location rawDestination = destinationOptional.get();
+            Location resultDestination = new Location(rawDestination.getWorld(), rawDestination.getX()+0.5, rawDestination.getY()+1, rawDestination.getZ()+0.5);
+            player.teleportAsync(resultDestination).thenAccept(success -> {
+                originalPlayerLocations.put(player.getUniqueId(), originalLocation);
                 if(playersShouldBeMessagedOnTeleport) {
                     chatMessenger.sendChat(player, onTpMessages);
                 }

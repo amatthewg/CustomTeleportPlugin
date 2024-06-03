@@ -3,7 +3,7 @@ package com.aiden.customteleportplugin.commands;
 import com.aiden.customteleportplugin.commands.subcommands.CancelCommand;
 import com.aiden.customteleportplugin.commands.subcommands.Subcommand;
 import com.aiden.customteleportplugin.commands.subcommands.ToolCommand;
-import com.aiden.customteleportplugin.commands.subcommands.ViewAllCommand;
+import com.aiden.customteleportplugin.commands.subcommands.ViewingCommand;
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.ConfirmableSubcommand;
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.exclusive.ExclusiveCommand;
 import com.aiden.customteleportplugin.commands.subcommands.confirmables.WarnCommand;
@@ -43,7 +43,7 @@ public class CommandManager implements CommandExecutor {
     public CommandManager(JavaPlugin pl) {
         noPermissionMsg = pl.getConfig().getString("no-permission-message");
         adminsShouldBeWarnedOnCommandExecute = pl.getConfig().getBoolean("warn-admins-on-execute");
-        subcommands.add(new ViewAllCommand());
+        subcommands.add(new ViewingCommand());
         subcommands.add(new ToolCommand());
         subcommands.add(new CancelCommand());
         subcommands.add(new WarnCommand(pl));

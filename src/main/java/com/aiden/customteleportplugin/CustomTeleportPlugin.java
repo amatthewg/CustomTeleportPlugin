@@ -66,7 +66,12 @@ public final class CustomTeleportPlugin extends JavaPlugin {
             errorOnStartup = true;
             deactivatePlugin();
         }
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "ptpb:ptpb");
+        String channel = getConfig().getString("bungeecord-channel");
+        if(channel == null || channel.isEmpty()) {
+            getLogger().log(Level.WARNING, "The bungeecord channel is not specified in the config.yml");
+            return;
+        }
+        getServer().getMessenger().registerOutgoingPluginChannel(this, channel);
     }
 
     @Override

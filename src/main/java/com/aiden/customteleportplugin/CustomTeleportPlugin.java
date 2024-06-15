@@ -66,6 +66,7 @@ public final class CustomTeleportPlugin extends JavaPlugin {
             errorOnStartup = true;
             deactivatePlugin();
         }
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "ptpb:ptpb");
     }
 
     @Override
@@ -79,6 +80,7 @@ public final class CustomTeleportPlugin extends JavaPlugin {
         BlockLocationManager.setBlockViewingEnabled(false);
         Set<Location> allBlockLocations = BlockLocationManager.getAllBlockLocations();
         fileManager.saveSetToFile(allBlockLocations);
+        getServer().getMessenger().unregisterOutgoingPluginChannel(this);
     }
 
     private void initializeWorldManager() {

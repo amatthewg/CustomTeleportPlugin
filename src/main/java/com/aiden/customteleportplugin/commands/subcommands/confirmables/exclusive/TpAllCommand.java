@@ -17,6 +17,8 @@ public class TpAllCommand extends ExclusiveCommand {
     private static final String notEnoughBlocksMsg = "&cWARNING: Could not teleport all players because there\n" +
             "weren't enough set block locations!";
 
+    private static String bungeeCordTpChannel = null;
+
     private static boolean shouldWarnAdminsOnTeleportResult;
 
     private static JavaPlugin plugin;
@@ -28,6 +30,7 @@ public class TpAllCommand extends ExclusiveCommand {
     public TpAllCommand(JavaPlugin pl) {
         plugin = pl;
         shouldWarnAdminsOnTeleportResult = plugin.getConfig().getBoolean("warn-admins-on-teleport");
+        bungeeCordTpChannel = plugin.getConfig().getString("bungeecord-channel");
     }
 
     public TpAllCommand() {}
@@ -66,6 +69,13 @@ public class TpAllCommand extends ExclusiveCommand {
         //ReloadCommand.setCanBeExecuted(false);
         // Register movement listener after teleport is complete to avoid issues with cancelling teleport movement
         plugin.getServer().getPluginManager().registerEvents(new HandlePlayerMove(), plugin);
+
+        // TPall command is fully active -- send bungeecord message to connect all players from various servers
+        if(bungeeCordTpChannel == null) {
+            chatMessenger.sendChat(sender, "&cWarning: cannot get players from other servers because the bungeecord channel is not specified in the config.yml");
+            return;
+        }
+        sendBungeeCordMessage(sender);
     }
 
     @Override
@@ -84,5 +94,11 @@ public class TpAllCommand extends ExclusiveCommand {
     public String getCannotBeExecutedMessage() { return "you must first execute command &e/ctp return"; }
 
     public static void setCanBeExecuted(boolean state) { canBeExecuted = state; }
+
+    private void sendBungeeCordMessage(Player player) {
+        com.google.common.io.ByteArrayDataOutput out = com.google.common.io.ByteStreams.newDataOutput();
+        out.writeBoolean(true);
+        player.sendPluginMessage(plugin, bungeeCordTpChannel, out.toByteArray());
+    }
 
 }

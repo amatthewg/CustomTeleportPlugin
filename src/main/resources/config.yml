@@ -82,6 +82,7 @@ on-return-messages:
   - '&aChurch is over and you have been returned to your original location'
 # - 'You can specify multiple message lines to be sent if you want'
 
+bungeecord-channel: 'channel'
 
 # ***NOT IMPLEMENTED, PLEASE DISREGARD***
 #####################################################################################################################

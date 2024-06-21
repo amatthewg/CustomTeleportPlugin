@@ -51,7 +51,6 @@ public class TpAllCommand extends ExclusiveCommand {
             if(shouldWarnAdminsOnTeleportResult) {
                 chatMessenger.messageAdmins(String.format(
                         "&aSuccessfully teleported &e%d &aplayers", teleportedPlayerCount.get()));
-                return;
             }
             chatMessenger.sendChat(sender, String.format(
                     "&aSuccessfully teleported &e%d &aplayers", teleportedPlayerCount.get()

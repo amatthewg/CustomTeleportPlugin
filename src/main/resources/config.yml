@@ -53,10 +53,10 @@ on-tp-messages:
 
 
 #####################################################################################################################
-## When the players are teleported, all commands will be disabled for those players except for these commands:     ##
+## When the players are teleported, all these commands will be disabled:                                           ##
 ## (you must enter the commands without a '/' preceding them)                                                      ##
 #####################################################################################################################
-enabled-commands:
+disabled-commands:
   - 'bible'
   - 'openbible'
 

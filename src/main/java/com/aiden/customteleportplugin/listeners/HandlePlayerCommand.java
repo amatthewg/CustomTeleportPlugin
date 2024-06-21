@@ -13,14 +13,14 @@ import java.util.Set;
 
 public class HandlePlayerCommand implements Listener {
 
-    private static final Set<String> allowedCommands = new HashSet<>();
+    private static final Set<String> disallowedCommands = new HashSet<>();
 
     private static final PlayerChatMessenger chatMessenger = new PlayerChatMessenger();
 
     private static String commandNotAllowedMessage = null;
 
     public HandlePlayerCommand(JavaPlugin pl) {
-        pl.getConfig().getStringList("enabled-commands").forEach(cmd -> allowedCommands.add("/" + cmd.toLowerCase()));
+        pl.getConfig().getStringList("disabled-commands").forEach(cmd -> disallowedCommands.add("/" + cmd.toLowerCase()));
         commandNotAllowedMessage = pl.getConfig().getString("command-not-allowed-message");
     }
 
@@ -30,7 +30,7 @@ public class HandlePlayerCommand implements Listener {
         boolean playerIsTeleported = TeleportManager.playerIsTeleported(player);
         if(!playerIsTeleported) return;
         String command = event.getMessage().split(" ")[0].toLowerCase();
-        if(allowedCommands.contains(command)) return;
+        if(!disallowedCommands.contains(command)) return;
         event.setCancelled(true);
         chatMessenger.sendChat(player, commandNotAllowedMessage);
     }
